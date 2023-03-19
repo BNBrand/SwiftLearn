@@ -97,10 +97,11 @@ class _UploadFormState extends State<UploadForm> {
     );
   }
 
-  handleSubmit(){
+  handleSubmit() async{
     setState(() {
       isUploading = true;
     });
+    uploadImage();
   }
 
   uploadImage() async{
@@ -120,6 +121,10 @@ class _UploadFormState extends State<UploadForm> {
         'caption': captionController.text.trim(),
         'createdAt': DateTime.now(),
         'stars': {},
+      });
+      setState(() {
+        imageFile = null;
+        isUploading = false;
       });
       
     }catch(e){
@@ -176,7 +181,7 @@ class _UploadFormState extends State<UploadForm> {
             const SizedBox(height: 20,),
             CustomButton(
                 text: 'Post',
-                onPressed: isUploading ? null : () => handleSubmit(),
+                onPressed: isUploading ? null : handleSubmit,
                 color: buttonColor,
               icon: Icons.upload,
               textColor: textColor1,
