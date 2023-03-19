@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/services/auth_methods.dart';
+import 'package:swift_learn/utils/colors.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);

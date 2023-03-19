@@ -125,6 +125,7 @@ class _UploadFormState extends State<UploadForm> {
       setState(() {
         imageFile = null;
         isUploading = false;
+        postId = Uuid().v4();
       });
       
     }catch(e){

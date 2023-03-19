@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/Forum/uploadForm.dart';
+import 'package:swift_learn/screens/more/more.dart';
 import '../../services/auth_methods.dart';
 import '../../utils/colors.dart';
 import '../../widgets/custom_button.dart';
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const UploadForm(),
     const Text('Contacts'),
     const Text('search'),
-    SafeArea(child: CustomButton(text: 'Log Out', onPressed: () => AuthMethods().signOut(), color: buttonColor, icon: Icons.logout, textColor: textColor1,)),
+    const MoreScreen()
   ];
 
   @override
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: pages[_page],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: secondaryBackgroundColor,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         onTap: onPageChanged,
