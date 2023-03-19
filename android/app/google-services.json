@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "294331029490",
+    "project_id": "swiftlearn-d627e",
+    "storage_bucket": "swiftlearn-d627e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294331029490:android:6748bd9063e917d4a1bd6b",
+        "android_client_info": {
+          "package_name": "com.BNBrand.swift_learn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294331029490-ept6t3l3plhk67ls7nmqicv097s4lctp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.BNBrand.swift_learn",
+            "certificate_hash": "fcb26235355c7fe2414b44e35d2853cb076195be"
+          }
+        },
+        {
+          "client_id": "294331029490-3q62g9gq78hdds5vef23ltlvbcp71hga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOcrXPvthh8oM3xhqxeZUSP6Jf51DsUFg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294331029490-3q62g9gq78hdds5vef23ltlvbcp71hga.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
