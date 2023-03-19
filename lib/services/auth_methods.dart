@@ -36,7 +36,8 @@ class AuthMethods {
             'email' : user.email,
             'uid': user.uid,
             'photoURL': user.photoURL,
-            'createdAt': DateTime.now()
+            'createdAt': DateTime.now(),
+            'bio': ''
           });
         }
         res = true;

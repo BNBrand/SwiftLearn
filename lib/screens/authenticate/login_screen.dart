@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swift_learn/utils/colors.dart';
 
 import '../../services/auth_methods.dart';
 import '../../widgets/custom_button.dart';
@@ -26,14 +27,15 @@ class _LoginScreenState extends State<LoginScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          CustomButton(
-            text: 'Google Sign In',
+          CustomButton2(
+            text: 'Continue with Google',
             onPressed: () async {
               bool res = await _authMethods.signInWithGoogle(context);
               if (res) {
                 Navigator.pushNamed(context, '/home');
               }
-            },
+            }, color: textColor1,
+            image: 'assets/images/google.png',
           ),
         ],
       ),
