@@ -5,6 +5,7 @@ import '../utils/colors.dart';
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
+  final Color textColor;
   final Color color;
   final IconData icon;
   const CustomButton({
@@ -13,6 +14,7 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     required this.color,
     required this.icon,
+    required this.textColor,
   }) : super(key: key);
 
   @override
@@ -33,14 +35,15 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon),
             const SizedBox(width: 3.0,),
             Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
-                color: backgroundColor2
+                color: textColor
               ),
             ),
           ],

@@ -179,6 +179,7 @@ class _UploadFormState extends State<UploadForm> {
                 onPressed: isUploading ? null : () => handleSubmit(),
                 color: buttonColor,
               icon: Icons.upload,
+              textColor: textColor1,
             ),
             isUploading ? Row(
               mainAxisAlignment: MainAxisAlignment.center,

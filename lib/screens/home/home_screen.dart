@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const UploadForm(),
     const Text('Contacts'),
     const Text('search'),
-    SafeArea(child: CustomButton(text: 'Log Out', onPressed: () => AuthMethods().signOut(), color: buttonColor, icon: Icons.logout,)),
+    SafeArea(child: CustomButton(text: 'Log Out', onPressed: () => AuthMethods().signOut(), color: buttonColor, icon: Icons.logout, textColor: textColor1,)),
   ];
 
   @override
