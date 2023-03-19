@@ -16,8 +16,6 @@ class UploadForm extends StatefulWidget {
 
 class _UploadFormState extends State<UploadForm> {
 
-  File? imageFile;
-
   void _getImageFromCamera() async{
     Navigator.pop(context);
     XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
@@ -50,7 +48,9 @@ class _UploadFormState extends State<UploadForm> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 InkWell(
-                  onTap: (){ _getImageFromCamera(); },
+                  onTap: (){
+                    _getImageFromCamera();
+                    },
                   child: Row(
                     children: const [
                       Padding(
@@ -61,8 +61,11 @@ class _UploadFormState extends State<UploadForm> {
                     ],
                   ),
                 ),
+                SizedBox(height: 10.0,),
                 InkWell(
-                  onTap: (){ _getImageFromGallery(); },
+                  onTap: (){
+                    _getImageFromGallery();
+                    },
                   child: Row(
                     children: const [
                       Padding(
@@ -158,6 +161,8 @@ class _UploadFormState extends State<UploadForm> {
       ),
     );
   }
+
+  File? imageFile;
 
   @override
   Widget build(BuildContext context) {

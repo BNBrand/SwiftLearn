@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/services/auth_methods.dart';
 
@@ -21,7 +22,7 @@ class _HomeState extends State<Home> {
             Text(authMethods.user.displayName!),
             const SizedBox(height: 10),
             CircleAvatar(
-              backgroundImage: NetworkImage(authMethods.user.photoURL!),
+              backgroundImage: CachedNetworkImageProvider(authMethods.user.photoURL!),
               radius: 50
             ),
             const SizedBox(height: 10),

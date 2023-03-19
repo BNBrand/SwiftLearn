@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/Forum/uploadForm.dart';
-
 import '../../services/auth_methods.dart';
 import '../../utils/colors.dart';
 import '../../widgets/custom_button.dart';
@@ -22,10 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> pages = [
-    Home(),
-    UploadForm(),
+    const Home(),
+    const UploadForm(),
     const Text('Contacts'),
-    Text('search'),
+    const Text('search'),
     CustomButton(text: 'Log Out', onPressed: () => AuthMethods().signOut()),
   ];
 
