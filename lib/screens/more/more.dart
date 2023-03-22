@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/more/logout.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 
-import '../../services/auth_methods.dart';
 import '../../utils/colors.dart';
-import '../../widgets/custom_button.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({Key? key}) : super(key: key);
