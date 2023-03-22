@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/Forum/uploadForm.dart';
 import 'package:swift_learn/screens/more/more.dart';
-import '../../services/auth_methods.dart';
+import 'package:swift_learn/screens/search/search_screen.dart';
 import '../../utils/colors.dart';
-import '../../widgets/custom_button.dart';
 import 'home.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const Home(),
     const UploadForm(),
     const Text('Contacts'),
-    const Text('search'),
+    const SearchScreen(),
     const MoreScreen()
   ];
 
