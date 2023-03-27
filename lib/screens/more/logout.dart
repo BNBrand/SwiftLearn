@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swift_learn/screens/authenticate/login_screen.dart';
 
 import '../../services/auth_methods.dart';
 import '../../utils/colors.dart';
@@ -22,7 +23,12 @@ class _LogoutScreenState extends State<LogoutScreen> {
       body: Center(
         child: CustomButton(
           text: 'Log Out',
-          onPressed: () => AuthMethods().signOut(),
+          onPressed: () async{
+          AuthMethods().signOut();
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context){
+            return const LoginScreen();
+    }));
+    },
           color: buttonColor, icon: Icons.logout,
           textColor: textColor1,
         ),

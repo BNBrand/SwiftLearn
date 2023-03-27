@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/services/auth_methods.dart';
-import 'package:swift_learn/utils/colors.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -12,6 +11,30 @@ class Home extends StatefulWidget {
 AuthMethods authMethods = AuthMethods();
 
 class _HomeState extends State<Home> {
+
+  // String? displayName = '';
+  // String? email = '';
+  // String? photoURL = '';
+  //
+  // Future _getData() async{
+  //   await FirebaseFirestore.instance.collection('user').doc(authMethods.currentUser!.uid)
+  //       .get().then((snapshot) async{
+  //     if(snapshot.exists){
+  //       setState(() {
+  //         displayName = snapshot.data()!['displayName'];
+  //         photoURL = snapshot.data()!['photoURL'];
+  //         email = snapshot.data()!['email'];
+  //       });
+  //     }
+  //   });
+  // }
+
+  // @override
+  // void initState() {
+  //   _getData();
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Center(

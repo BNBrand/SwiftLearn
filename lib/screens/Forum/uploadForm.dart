@@ -26,7 +26,7 @@ class _UploadFormState extends State<UploadForm> {
   File? imageFile;
   String? imageUrl;
   bool isUploading = false;
-  String postId = Uuid().v4();
+  String postId = const Uuid().v4();
 
   void _getImageFromCamera() async{
     Navigator.pop(context);
@@ -75,7 +75,7 @@ class _UploadFormState extends State<UploadForm> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10.0,),
+                const SizedBox(height: 10.0,),
                 InkWell(
                   onTap: (){
                     _getImageFromGallery();
@@ -106,7 +106,7 @@ class _UploadFormState extends State<UploadForm> {
 
   uploadImage() async{
     try{
-      final ref = await FirebaseStorage.instance.ref().child('postimages').child('post_$postId.jpg');
+      final ref = FirebaseStorage.instance.ref().child('postimages').child('post_$postId.jpg');
       await ref.putFile(imageFile!);
       imageUrl = await ref.getDownloadURL();
       
@@ -125,7 +125,7 @@ class _UploadFormState extends State<UploadForm> {
       setState(() {
         imageFile = null;
         isUploading = false;
-        postId = Uuid().v4();
+        postId = const Uuid().v4();
       });
       
     }catch(e){
@@ -194,7 +194,7 @@ class _UploadFormState extends State<UploadForm> {
                 SizedBox(width: 5.0,),
                 Text('uploading...'),
               ],
-            ) : SizedBox()
+            ) : const SizedBox()
           ],
         ),
       ),
@@ -208,20 +208,20 @@ class _UploadFormState extends State<UploadForm> {
         child: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: captionController,
                 maxLines: 5,
                 decoration:  InputDecoration(
                   suffixIcon: IconButton(
                       onPressed: captionController.clear,
-                      icon: Icon(Icons.clear, color: textColor2,)
+                      icon: const Icon(Icons.clear, color: textColor2,)
                   ),
                   border: InputBorder.none,
                   hintText: 'Write a caption',
                   filled: true,
                   fillColor: backgroundColor2,
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
                           color: buttonColor
                       )

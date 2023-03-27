@@ -130,138 +130,154 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         elevation: 0.0,
         backgroundColor: backgroundColor,
       ),
-      body: Column(
-          children: [
-      Container(
-      height: MediaQuery.of(context).size.height * 0.33,
-      color: backgroundColor,
-      child: LayoutBuilder(builder: (context, constraints){
-        double innerHeight = constraints.maxHeight;
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: innerHeight * 0.7,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: secondaryBackgroundColor,
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+            children: [
+        Container(
+        height: MediaQuery.of(context).size.height * 0.5,
+        color: backgroundColor,
+        child: LayoutBuilder(builder: (context, constraints){
+          double innerHeight = constraints.maxHeight;
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
                 child: Column(
                   children: [
-                    const SizedBox(height: 70,),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Text(widget.displayName!,
-                            style: const TextStyle(fontSize: 30),
+                    Container(height: 70,),
+                    Container(
+                      height: innerHeight * 0.8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: secondaryBackgroundColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: CircleAvatar(
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  radius: 25,
+                                  child: IconButton(
+                                    icon: Icon(Icons.edit,size: 25,),
+                                    onPressed: _showImageDialog,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(widget.email!)
-                        ],
+                          backgroundColor: containerColor,
+                          radius: 65,
+                          backgroundImage: CachedNetworkImageProvider(widget.photoURL!),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              top: 20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: containerColor,
-                      radius: 70,
-                      backgroundImage: CachedNetworkImageProvider(widget.photoURL!),
-                    ),
-                    Positioned(
-                      bottom: 0.0,
-                      right: 0.0,
-                      child: CircleAvatar(
-                        radius: 25,
-                        child: IconButton(
-                          icon: Icon(Icons.edit,color: buttonColor2,),
-                          onPressed: _showImageDialog,
-                        )
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(widget.displayName!,
+                              style: const TextStyle(fontSize: 30),
+                            ),
+                            Text(widget.email!,style: TextStyle(color: textColor2),),
+                          ],
+                        ),
                       ),
-                    )
-                  ],
+                      SizedBox(height: 25,),
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        color: backgroundColor2,
+                        child: Text(widget.bio!,),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        );
-      }),
-    ),
-        const SizedBox(height: 20.0,),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.57,
-          decoration: const BoxDecoration(
-              color: secondaryBackgroundColor,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(50),
-                  topLeft: Radius.circular(50)
               )
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text('Edit Profile Details',
-                  style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Divider(
-                  thickness: 2,
-                  color: containerColor,
-                ),
-                TextField(
-                  controller: nameController,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: nameController.clear,
-                    ),
-                    hintText:'Enter Name',
-                    labelText: 'User Name',
-                  ),
-                ),
-                const SizedBox(height: 20,),
-                 TextField(
-                   controller: bioController,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: bioController.clear,
-                    ),
-                    hintText:'Enter Bio',
-                    labelText: 'User Bio',
-                  ),
-                ),
-                SizedBox(height: 20,),
-                CustomButton(
-                    text: 'Update',
-                    onPressed: (){},
-                    color: buttonColor,
-                    icon: Icons.update,
-                    textColor: textColor1
+            ],
+          );
+        }),
+    ),
+          const SizedBox(height: 20.0,),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.57,
+            decoration: const BoxDecoration(
+                color: secondaryBackgroundColor,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(50),
+                    topLeft: Radius.circular(50)
                 )
-              ],
             ),
-          ),
-        )
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text('Edit Profile Details',
+                    style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Divider(
+                    thickness: 2,
+                    color: containerColor,
+                  ),
+                  TextField(
+                    controller: nameController,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: nameController.clear,
+                      ),
+                      hintText:'Enter Name',
+                      labelText: 'User Name',
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                   TextField(
+                     controller: bioController,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: bioController.clear,
+                      ),
+                      hintText:'Enter Bio',
+                      labelText: 'User Bio',
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  CustomButton(
+                      text: 'Update',
+                      onPressed: (){},
+                      color: buttonColor,
+                      icon: Icons.update,
+                      textColor: textColor1
+                  )
+                ],
+              ),
+            ),
+          )
     ]
-    )
+    ),
+      )
     );
   }
 }

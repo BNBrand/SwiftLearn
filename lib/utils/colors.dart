@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+const starColor = Colors.yellow;
 const textColor1 = Colors.white;
 const textColor2 = Colors.grey;
 const containerColor = Color(0xff353653);

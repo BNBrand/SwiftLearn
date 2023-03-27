@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.33,
+                height: MediaQuery.of(context).size.height * 0.6,
                 color: backgroundColor,
                 child: LayoutBuilder(builder: (context, constraints){
                   double innerHeight = constraints.maxHeight;
@@ -61,60 +61,106 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        child: Container(
-                          height: innerHeight * 0.7,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: secondaryBackgroundColor,
-                          ),
+                        child: Column(
+                          children: [
+                            Container(height: 70,),
+                            Container(
+                              height: innerHeight * 0.8,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: secondaryBackgroundColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Center(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Row(
-                                  mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text('   0 Stars',style: TextStyle(color: textColor1),),
-                                    widget.profileId == FirebaseAuth.instance.currentUser!.uid ? TextButton.icon(
-                                        onPressed: (){
-                                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                                            return EditProfileScreen(
-                                              photoURL: user.photoURL,
-                                              displayName: user.displayName,
-                                              email: user.email,
-                                              bio: user.bio,
-                                              uid: user.uid,
-                                            );
-                                          }));
-                                        },
-                                        icon: const Icon(Icons.edit,color: buttonColor2,),
-                                        label: const Text('Edit Profile',style: TextStyle(color: buttonColor2),)
+                                    Column(
+                                      children: [
+                                        Container(height: 70,),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.star,color: starColor,),
+                                            const Text('0 Stars',style: TextStyle(color: textColor1),),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    CircleAvatar(
+                                      backgroundColor: containerColor,
+                                      radius: 65,
+                                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                                    ),
+                                    widget.profileId == FirebaseAuth.instance.currentUser!.uid ?
+                                    GestureDetector(
+                                      onTap: (){
+                                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+                                          return EditProfileScreen(
+                                            photoURL: user.photoURL,
+                                            displayName: user.displayName,
+                                            email: user.email,
+                                            bio: user.bio,
+                                            uid: user.uid,
+                                          );
+                                        }));
+                                      },
+                                      child: Column(
+                                        children: [
+                                          Container(height: 70,),
+                                          Row(
+                                            children: const [
+                                              Icon(Icons.edit,color: buttonColor2,),
+                                              Text('Edit Profile',style: TextStyle(color: buttonColor2),)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     )
-                                    :
-                                    TextButton.icon(
-                                        onPressed: (){},
-                                        icon: const Icon(Icons.add,color: buttonColor2,),
-                                        label: const Text('Follow',style: TextStyle(color: buttonColor2),)
+                                        :
+                                    GestureDetector(
+                                        onTap: (){},
+                                        child: Column(
+                                          children: [
+                                            Container(height: 70,),
+                                            Row(
+                                              children: const [
+                                                Icon(Icons.add,color: buttonColor2,),
+                                                Text('Follow',style: TextStyle(color: buttonColor2),)
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                     )
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 20,),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
                                     Text(user.displayName,
-                                    style: const TextStyle(fontSize: 30),
+                                      style: const TextStyle(fontSize: 30),
                                     ),
-                                    Text(user.email),
+                                    Text(user.email,style: TextStyle(color: textColor2),),
                                   ],
                                 ),
                               ),
-                             const Divider(
-                               thickness: 2,
-                               color: containerColor,
-                             ),
+                              const Divider(
+                                thickness: 2,
+                                color: containerColor,
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 mainAxisSize: MainAxisSize.max,
@@ -133,21 +179,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   buildCountColumn('Following', 0),
                                 ],
+                              ),
+                               SizedBox(height: 25,),
+                               Container(
+                                 padding: EdgeInsets.all(12),
+                                color: backgroundColor2,
+                                child: Text(user.bio,),
                               )
                             ],
-                          ),
-
-                        ),
-                      ),
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: CircleAvatar(
-                            backgroundColor: containerColor,
-                            radius: 70,
-                            backgroundImage: CachedNetworkImageProvider(user.photoURL),
                           ),
                         ),
                       )
@@ -157,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 20.0,),
               Container(
-                height: MediaQuery.of(context).size.height * 0.57,
+                height: MediaQuery.of(context).size.height,
                 decoration: const BoxDecoration(
                   color: secondaryBackgroundColor,
                   borderRadius: BorderRadius.only(
