@@ -53,7 +53,57 @@ class AuthMethods {
     }
     return res;
   }
+  //Sign in with email and password
+  Future<bool> signInWithEmailAndPass(BuildContext context,String email,String password) async{
+    bool res = false;
+    try{
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password
+      );
+      User? user = userCredential.user;
 
+      if (user != null) {
+        res = true;
+      }
+    }on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.toString());
+      res = false;
+    }
+    return res;
+  }
+
+  //create User With Email and Password
+  Future<bool> createUserWithEmailAndPass(BuildContext context,String email,String password,String name) async{
+    bool res = false;
+    try{
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password
+      );
+      User? user = userCredential.user;
+
+      if (user != null) {
+        if (userCredential.additionalUserInfo!.isNewUser) {
+          await _firestore.collection('users').doc(user.uid).set({
+            'displayName': user.displayName,
+            'email' : user.email,
+            'uid': user.uid,
+            'photoURL': user.photoURL,
+            'createdAt': DateTime.now(),
+            'bio': ''
+          });
+        }
+        res = true;
+      }
+    }on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.toString());
+      res = false;
+    }
+    return res;
+  }
+
+  //signOut
   void signOut() async {
     try {
       _auth.signOut();

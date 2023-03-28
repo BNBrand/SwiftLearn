@@ -25,7 +25,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
           text: 'Log Out',
           onPressed: () async{
           AuthMethods().signOut();
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
             return const LoginScreen();
     }));
     },

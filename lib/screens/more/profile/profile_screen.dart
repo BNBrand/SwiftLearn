@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swift_learn/models/user_model.dart';
 import 'package:swift_learn/screens/more/profile/edit_profile.dart';
 
 import '../../../utils/colors.dart';
@@ -18,6 +17,33 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  String? displayName = '';
+  String? email = '';
+  String? photoURL = '';
+  String? bio = '';
+  String? uid = '';
+
+  Future _getData() async{
+    await FirebaseFirestore.instance.collection('users').doc(widget.profileId)
+        .get().then((snapshot) async{
+      if(snapshot.exists){
+        setState(() {
+          displayName = snapshot.data()!['displayName'];
+          photoURL = snapshot.data()!['photoURL'];
+          email = snapshot.data()!['email'];
+          uid = snapshot.data()!['uid'];
+          bio = snapshot.data()!['bio'];
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    _getData();
+    super.initState();
+  }
 
   buildProfileButton(){
     return const Text('Profile button');
@@ -39,18 +65,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   profileHeader(){
-    return FutureBuilder(
-      future: FirebaseFirestore.instance.collection('users').doc(widget.profileId).get(),
-        builder: (context, snapshot) {
-        if(!snapshot.hasData){
-          return const Center(child: CircularProgressIndicator(color: buttonColor,));
-        }
-        Users user = Users.fromDocument(snapshot.data!);
         return SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.5,
                 color: backgroundColor,
                 child: LayoutBuilder(builder: (context, constraints){
                   double innerHeight = constraints.maxHeight;
@@ -101,18 +120,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     CircleAvatar(
                                       backgroundColor: containerColor,
                                       radius: 65,
-                                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                                      backgroundImage: CachedNetworkImageProvider(photoURL!),
                                     ),
                                     widget.profileId == FirebaseAuth.instance.currentUser!.uid ?
                                     GestureDetector(
                                       onTap: (){
                                         Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
                                           return EditProfileScreen(
-                                            photoURL: user.photoURL,
-                                            displayName: user.displayName,
-                                            email: user.email,
-                                            bio: user.bio,
-                                            uid: user.uid,
+                                            photoURL: photoURL,
+                                            displayName: displayName,
+                                            email: email,
+                                            bio: bio,
+                                            uid: uid,
                                           );
                                         }));
                                       },
@@ -150,10 +169,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
-                                    Text(user.displayName,
+                                    Text(displayName!,
                                       style: const TextStyle(fontSize: 30),
                                     ),
-                                    Text(user.email,style: TextStyle(color: textColor2),),
+                                    Text(email!,style: TextStyle(color: textColor2),),
                                   ],
                                 ),
                               ),
@@ -184,7 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                Container(
                                  padding: EdgeInsets.all(12),
                                 color: backgroundColor2,
-                                child: Text(user.bio,),
+                                child: Text(bio!,),
                               )
                             ],
                           ),
@@ -207,8 +226,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )
             ],
           ),
-        );
-        }
     );
   }
 

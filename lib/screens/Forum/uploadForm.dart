@@ -27,6 +27,28 @@ class _UploadFormState extends State<UploadForm> {
   String? imageUrl;
   bool isUploading = false;
   String postId = const Uuid().v4();
+  String? displayName = '';
+  String? email = '';
+  String? photoURL = '';
+
+  Future _getData() async{
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+        .get().then((snapshot) async{
+      if(snapshot.exists){
+        setState(() {
+          displayName = snapshot.data()!['displayName'];
+          photoURL = snapshot.data()!['photoURL'];
+          email = snapshot.data()!['email'];
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    _getData();
+    super.initState();
+  }
 
   void _getImageFromCamera() async{
     Navigator.pop(context);
@@ -114,9 +136,9 @@ class _UploadFormState extends State<UploadForm> {
       .collection('userpost').doc(postId).set({
         'postId': postId,
         'uid': FirebaseAuth.instance.currentUser!.uid,
-        'displayName': FirebaseAuth.instance.currentUser!.displayName,
-        'photoURL': FirebaseAuth.instance.currentUser!.photoURL,
-        'email': FirebaseAuth.instance.currentUser!.email,
+        'displayName': displayName,
+        'photoURL': photoURL,
+        'email': email,
         'image': imageUrl,
         'caption': captionController.text.trim(),
         'createdAt': DateTime.now(),
@@ -160,7 +182,7 @@ class _UploadFormState extends State<UploadForm> {
             const SizedBox(height: 10,),
             ListTile(
               leading: CircleAvatar(
-                backgroundImage: CachedNetworkImageProvider(FirebaseAuth.instance.currentUser!.photoURL!),
+                backgroundImage: CachedNetworkImageProvider(photoURL!),
               ),
               title: Container(
                 width: 250.0,
@@ -194,7 +216,13 @@ class _UploadFormState extends State<UploadForm> {
                 SizedBox(width: 5.0,),
                 Text('uploading...'),
               ],
-            ) : const SizedBox()
+            ) : TextButton.icon(
+              onPressed: (){
+                Navigator.of(context);
+              },
+              icon: const Icon(Icons.cancel,color: textColor1,),
+              label: const Text('Cancel',style: TextStyle(color: textColor1),),
+            ),
           ],
         ),
       ),
@@ -231,10 +259,21 @@ class _UploadFormState extends State<UploadForm> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: TextButton.icon(
-                onPressed: _showImageDialog,
-                icon: const Icon(Icons.image,color: textColor1,),
-                label: const Text('Add Image',style: TextStyle(color: textColor1),),
+              child: Column(
+                children: [
+                  TextButton.icon(
+                    onPressed: _showImageDialog,
+                    icon: const Icon(Icons.image,color: textColor1,),
+                    label: const Text('Add Image',style: TextStyle(color: textColor1),),
+                  ),
+                  TextButton.icon(
+                    onPressed: (){
+                      Navigator.of(context);
+                    },
+                    icon: const Icon(Icons.cancel,color: textColor1,),
+                    label: const Text('Cancel',style: TextStyle(color: textColor1),),
+                  ),
+                ],
               ),
             )
           ],

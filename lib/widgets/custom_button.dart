@@ -58,12 +58,14 @@ class CustomButton2 extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color color;
   final String image;
+  final Color borderColor;
   const CustomButton2({
     Key? key,
     required this.text,
     required this.onPressed,
     required this.color,
     required this.image,
+    required this.borderColor,
   }) : super(key: key);
 
   @override
@@ -80,13 +82,14 @@ class CustomButton2 extends StatelessWidget {
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
-            side: const BorderSide(color: buttonColor),
+            side: BorderSide(color: borderColor),
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(image,height: 45,width: 45,),
+            Image.asset(image,height: 35,width: 35,),
+            SizedBox(width: 3,),
             Text(
               text,
               style: const TextStyle(

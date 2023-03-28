@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as fstorage;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swift_learn/utils/colors.dart';
+import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -31,6 +34,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController bioController = TextEditingController();
 
   File? imageFile;
+  String? imageUrl;
+  bool _nameValue = true;
+  bool _bioValue = true;
 
   void _getImageFromCamera() async{
     Navigator.pop(context);
@@ -49,8 +55,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         maxHeight: 1080, maxWidth: 1080
     );
     if(croppedImage != null){
-      setState(() {
+      setState((){
         imageFile = File(croppedImage.path);
+        _updatePhotoURL;
       });
     }
   }
@@ -79,7 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10.0,),
+                const SizedBox(height: 10.0,),
                 InkWell(
                   onTap: (){
                     _getImageFromGallery();
@@ -99,6 +106,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           );
         }
     );
+  }
+
+  void _updatePhotoURL() async{
+    String imageName = DateTime.now().microsecondsSinceEpoch.toString();
+    fstorage.Reference reference = fstorage.FirebaseStorage.instance.ref().child('userimages').child(imageName);
+    fstorage.UploadTask uploadTask = reference.putFile(File(imageFile!.path));
+    fstorage.TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+    await taskSnapshot.ref.getDownloadURL().then((url) async{
+      imageUrl = url;
+    });
+
+    await FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
+      'photoURL' : imageUrl
+    });
+  }
+
+  updateProfile(){
+    setState(() {
+      nameController.text.trim().length < 3 || nameController.text.trim().isEmpty ? _nameValue = false : _nameValue = true;
+      bioController.text.trim().length > 100 ? _bioValue = false : _bioValue = true;
+
+      try{
+        if(_nameValue && _bioValue){
+          FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
+            'displayName': nameController.text,
+            'bio': bioController.text
+          });
+          if(imageFile != null){
+            FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
+              'photoURL': imageUrl,
+            });
+          }
+        }
+      }catch(e){
+        showSnackBar(context, e.toString());
+      }
+    });
   }
 
    @override
@@ -125,7 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               onPressed: (){
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.check, color: buttonColor2,))
+              icon: const Icon(Icons.check, color: buttonColor2,))
         ],
         elevation: 0.0,
         backgroundColor: backgroundColor,
@@ -169,6 +213,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: CircleAvatar(
+                          backgroundColor: containerColor,
+                          radius: 65,
+                          backgroundImage: imageFile == null ? CachedNetworkImageProvider(widget.photoURL!):
+                          Image.file(imageFile!).image,
                           child: Stack(
                             children: [
                               Positioned(
@@ -177,16 +225,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: CircleAvatar(
                                   radius: 25,
                                   child: IconButton(
-                                    icon: Icon(Icons.edit,size: 25,),
+                                    icon: const Icon(Icons.edit,size: 25,),
                                     onPressed: _showImageDialog,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          backgroundColor: containerColor,
-                          radius: 65,
-                          backgroundImage: CachedNetworkImageProvider(widget.photoURL!),
                         ),
                       ),
                       Padding(
@@ -196,13 +241,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             Text(widget.displayName!,
                               style: const TextStyle(fontSize: 30),
                             ),
-                            Text(widget.email!,style: TextStyle(color: textColor2),),
+                            Text(widget.email!,style: const TextStyle(color: textColor2),),
                           ],
                         ),
                       ),
-                      SizedBox(height: 25,),
+                      const SizedBox(height: 25,),
                       Container(
-                        padding: EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12),
                         color: backgroundColor2,
                         child: Text(widget.bio!,),
                       )
@@ -228,13 +273,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: Text('Edit Profile Details',
                     style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  Divider(
+                  const Divider(
                     thickness: 2,
                     color: containerColor,
                   ),
@@ -242,8 +287,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: nameController,
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
+                      errorText: _nameValue ? null : 'Name is too short or empty',
+                      errorStyle: TextStyle(color: Colors.red),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: nameController.clear,
                       ),
                       hintText:'Enter Name',
@@ -255,18 +302,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                      controller: bioController,
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
+                      errorText: _bioValue ? null : 'Bio must be less than 100 characters',
+                      errorStyle: TextStyle(color: Colors.red),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: bioController.clear,
                       ),
                       hintText:'Enter Bio',
                       labelText: 'User Bio',
                     ),
                   ),
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
                   CustomButton(
                       text: 'Update',
-                      onPressed: (){},
+                      onPressed: updateProfile,
                       color: buttonColor,
                       icon: Icons.update,
                       textColor: textColor1

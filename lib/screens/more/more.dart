@@ -17,11 +17,11 @@ class _MoreScreenState extends State<MoreScreen> {
   int selectedIndex = 0;
 
   List<Widget> pages = [
-    const LogoutScreen(),
     ProfileScreen(profileId: FirebaseAuth.instance.currentUser!.uid,),
+    const LogoutScreen(),
   ];
-  List<String> title = ['Logout', 'Profile'];
-  List<IconData> icons = [Icons.logout, Icons.account_box];
+  List<String> title = ['Profile', 'Logout'];
+  List<IconData> icons = [Icons.account_box, Icons.logout];
 
   @override
   Widget build(BuildContext context) {
