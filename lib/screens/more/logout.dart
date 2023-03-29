@@ -13,6 +13,41 @@ class LogoutScreen extends StatefulWidget {
 }
 
 class _LogoutScreenState extends State<LogoutScreen> {
+
+  void _showImageDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+              backgroundColor: backgroundColor,
+              title: const Text('Do you want to logout'),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton.icon(
+                      onPressed: () async{
+                        AuthMethods().signOut();
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                          return const LoginScreen();
+                        }));
+                      },
+                      icon: Icon(Icons.check, color: Colors.green,),
+                      label: Text('Yes',style: TextStyle(color: textColor1),)
+                  ),
+                  TextButton.icon(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.clear,color: Colors.red,),
+                      label: Text('No',style: TextStyle(color: textColor1),)
+                  ),
+                ],
+              )
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,12 +58,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
       body: Center(
         child: CustomButton(
           text: 'Log Out',
-          onPressed: () async{
-          AuthMethods().signOut();
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-            return const LoginScreen();
-    }));
-    },
+          onPressed: _showImageDialog,
           color: buttonColor, icon: Icons.logout,
           textColor: textColor1,
         ),

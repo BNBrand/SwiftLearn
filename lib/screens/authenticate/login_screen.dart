@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:swift_learn/screens/home/home.dart';
+import 'package:swift_learn/screens/home/home_screen.dart';
 import 'package:swift_learn/utils/colors.dart';
 
 import '../../services/auth_methods.dart';
@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
               );
               if(res){
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return Home();
+                  return HomeScreen();
                 }));
               }
             },
@@ -291,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'bio': ''
                   }).then((value) => {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return Home();
+                  return HomeScreen();
                   }))
                   });
                 }
@@ -345,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
               bool res = await _authMethods.signInWithGoogle(context);
               if (res) {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return Home();
+                  return HomeScreen();
                 }));
               }
             }, color: textColor1,
