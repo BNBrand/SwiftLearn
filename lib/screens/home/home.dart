@@ -4,6 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/utils/colors.dart';
 
+import '../../models/user_model.dart';
+import '../../utils/utils.dart';
+import '../../widgets/loading.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -13,76 +17,66 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  String? displayName = '';
-  String? email = '';
-  String? photoURL = '';
-
-  Future _getData() async{
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
-        .get().then((snapshot) async{
-      if(snapshot.exists){
-        setState(() {
-          displayName = snapshot.data()!['displayName'];
-          photoURL = snapshot.data()!['photoURL'];
-          email = snapshot.data()!['email'];
-        });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    _getData();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: backgroundColor,
-        elevation: 0.0,
-      ),
-      drawer: Drawer(
-        backgroundColor: backgroundColor,
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
-                color: secondaryBackgroundColor
-              ),
-              currentAccountPicture: GestureDetector(
-                onTap: (){
-                  Navigator.pushNamed(context, '/profileScreen');
-                },
-                child: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(photoURL!),
-                ),
-              ),
-              accountName: Text(displayName!),
-              accountEmail: Text(email!),
-            ),
-          ],
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(displayName!),
-              const SizedBox(height: 10),
-              CircleAvatar(
-                backgroundImage: CachedNetworkImageProvider(photoURL!),
-                radius: 50
-              ),
-              const SizedBox(height: 10),
-              Text(email!),
-            ],
+    return FutureBuilder(
+        future: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return showSnackBar(context, 'There is an error');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loading();
+          }
+          Users user = Users.fromDocument(snapshot.data!);
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: backgroundColor,
+            elevation: 0.0,
           ),
-        ),
-      ),
+          drawer: Drawer(
+            backgroundColor: backgroundColor,
+            child: Column(
+              children: [
+                UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                    color: secondaryBackgroundColor
+                  ),
+                  currentAccountPicture: GestureDetector(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/profileScreen');
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                    ),
+                  ),
+                  accountName: Text(user.displayName),
+                  accountEmail: Text(user.email),
+                ),
+              ],
+            ),
+          ),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(user.displayName),
+                  const SizedBox(height: 10),
+                  CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                    radius: 50
+                  ),
+                  const SizedBox(height: 10),
+                  Text(user.email),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }

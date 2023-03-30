@@ -271,32 +271,36 @@ class _LoginScreenState extends State<LoginScreen> {
           CustomButton2(
             text: 'Signup with Email',
             onPressed: () async {
-              bool res = await _authMethods.createUserWithEmailAndPass(context,
-                  emailController.text.trim(),
-                  passwordController.text.trim(),
-                  nameController.text.trim()
-              );
-              try{
-                if (res) {
-                  final ref = FirebaseStorage.instance.ref().child('userimages').child(DateTime.now().microsecondsSinceEpoch.toString());
-                  await ref.putFile(imageFile!);
-                  imageUrl = await ref.getDownloadURL();
+              if(nameController.text.isNotEmpty && emailController.text.isNotEmpty && imageFile != null){
+                bool res = await _authMethods.createUserWithEmailAndPass(context,
+                    emailController.text.trim(),
+                    passwordController.text.trim(),
+                    nameController.text.trim()
+                );
+                try{
+                  if (res) {
+                    final ref = FirebaseStorage.instance.ref().child('userimages').child(DateTime.now().microsecondsSinceEpoch.toString());
+                    await ref.putFile(imageFile!);
+                    imageUrl = await ref.getDownloadURL();
 
-                  await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-                    'displayName': nameController.text,
-                    'email' : emailController.text,
-                    'uid': FirebaseAuth.instance.currentUser!.uid,
-                    'photoURL': imageUrl,
-                    'createdAt': DateTime.now(),
-                    'bio': ''
-                  }).then((value) => {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return HomeScreen();
-                  }))
-                  });
+                    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+                      'displayName': nameController.text,
+                      'email' : emailController.text,
+                      'uid': FirebaseAuth.instance.currentUser!.uid,
+                      'photoURL': imageUrl,
+                      'createdAt': DateTime.now(),
+                      'bio': ''
+                    }).then((value) => {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                        return HomeScreen();
+                      }))
+                    });
+                  }
+                }catch(e){
+                  showSnackBar(context, e.toString());
                 }
-              }catch(e){
-                showSnackBar(context, e.toString());
+              }else{
+                showSnackBar(context, "You must enter a name,email,password and profile photo");
               }
             },
             color: buttonColor,
@@ -331,28 +335,33 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          firstpage == true ? _buidLoginPage() : _buidSignUpPage(),
-          Divider(
-            color: containerColor,
-            thickness: 3,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              firstpage == true ? _buidLoginPage() : _buidSignUpPage(),
+              Divider(
+                color: containerColor,
+                thickness: 3,
+              ),
+              CustomButton2(
+                text: 'Continue with Google',
+                onPressed: () async {
+                  bool res = await _authMethods.signInWithGoogle(context);
+                  if (res) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                      return HomeScreen();
+                    }));
+                  }
+                }, color: textColor1,
+                image: 'assets/images/google.png',
+                borderColor: buttonColor2,
+              ),
+            ],
           ),
-          CustomButton2(
-            text: 'Continue with Google',
-            onPressed: () async {
-              bool res = await _authMethods.signInWithGoogle(context);
-              if (res) {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return HomeScreen();
-                }));
-              }
-            }, color: textColor1,
-            image: 'assets/images/google.png',
-            borderColor: buttonColor2,
-          ),
-        ],
+        ),
       ),
     );
   }

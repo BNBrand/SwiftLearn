@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as fstorage;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:swift_learn/utils/colors.dart';
 import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
@@ -57,7 +59,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if(croppedImage != null){
       setState((){
         imageFile = File(croppedImage.path);
-        _updatePhotoURL;
+        _updatePhotoURL();
       });
     }
   }
@@ -167,7 +169,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           IconButton(
               onPressed: (){
-                Navigator.pop(context);
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                  return ProfileScreen(profileId: FirebaseAuth.instance.currentUser!.uid,);
+                }));
               },
               icon: const Icon(Icons.check, color: buttonColor2,))
         ],
