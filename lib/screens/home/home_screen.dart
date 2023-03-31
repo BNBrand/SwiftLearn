@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swift_learn/screens/Forum/uploadForm.dart';
+import 'package:swift_learn/screens/Forum/post_screen.dart';
 import 'package:swift_learn/screens/more/more.dart';
 import 'package:swift_learn/screens/search/search_screen.dart';
 import '../../utils/colors.dart';
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> pages = [
     const Home(),
-    const UploadForm(),
+    const PostScreen(),
     const Text('Contacts'),
     const SearchScreen(),
     const MoreScreen()

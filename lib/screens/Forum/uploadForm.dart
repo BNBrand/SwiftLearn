@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swift_learn/screens/Forum/post_screen.dart';
 import 'package:swift_learn/utils/colors.dart';
 import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
@@ -128,18 +129,18 @@ class _UploadFormState extends State<UploadForm> {
 
   uploadImage() async{
     try{
-      final ref = FirebaseStorage.instance.ref().child('postimages').child('post_$postId.jpg');
+      final ref = FirebaseStorage.instance.ref().child('postImages').child('post_$postId.jpg');
       await ref.putFile(imageFile!);
       imageUrl = await ref.getDownloadURL();
       
-      FirebaseFirestore.instance.collection('post').doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('userpost').doc(postId).set({
+      FirebaseFirestore.instance.collection('posts').doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('userPost').doc(postId).set({
         'postId': postId,
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'displayName': displayName,
         'photoURL': photoURL,
         'email': email,
-        'image': imageUrl,
+        'postImage': imageUrl,
         'caption': captionController.text.trim(),
         'createdAt': DateTime.now(),
         'stars': {},
@@ -218,7 +219,9 @@ class _UploadFormState extends State<UploadForm> {
               ],
             ) : TextButton.icon(
               onPressed: (){
-                Navigator.of(context);
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                  return const PostScreen();
+                }));
               },
               icon: const Icon(Icons.cancel,color: textColor1,),
               label: const Text('Cancel',style: TextStyle(color: textColor1),),
@@ -268,7 +271,9 @@ class _UploadFormState extends State<UploadForm> {
                   ),
                   TextButton.icon(
                     onPressed: (){
-                      Navigator.of(context);
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                        return const PostScreen();
+                      }));
                     },
                     icon: const Icon(Icons.cancel,color: textColor1,),
                     label: const Text('Cancel',style: TextStyle(color: textColor1),),

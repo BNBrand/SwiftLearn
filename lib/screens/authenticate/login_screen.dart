@@ -341,6 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 20,),
               firstpage == true ? _buidLoginPage() : _buidSignUpPage(),
               Divider(
                 color: containerColor,

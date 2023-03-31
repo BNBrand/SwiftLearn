@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:swift_learn/models/post_model.dart';
 import 'package:swift_learn/screens/more/profile/edit_profile.dart';
 import 'package:swift_learn/utils/utils.dart';
 
@@ -20,9 +21,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  buildProfileButton(){
-    return const Text('Profile button');
-  }
+  bool isLoading = false;
+  int postCount = 0;
+  int starCount = 0;
+  List<Post> post = [];
 
   buildCountColumn(String label, int count){
     return Column(
@@ -32,9 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fontWeight: FontWeight.w600
         ),
         ),
-        Container(
-          child: Text(label),
-        )
+        Text(label)
       ],
     );
   }
@@ -98,7 +98,7 @@ return FutureBuilder(
                                   Row(
                                     children: [
                                       Icon(Icons.star,color: starColor,),
-                                      const Text('0 Stars',style: TextStyle(color: textColor1),),
+                                      Text('${starCount.toString()} Stars',style: TextStyle(color: textColor1),),
                                     ],
                                   ),
                                 ],
@@ -170,7 +170,7 @@ return FutureBuilder(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            buildCountColumn('Post', 0),
+                            buildCountColumn('Post', postCount),
                             Container(
                               height: 50,
                               width: 5,
@@ -199,22 +199,48 @@ return FutureBuilder(
             );
           }),
         ),
-        const SizedBox(height: 20.0,),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            color: secondaryBackgroundColor,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(50),
-              topLeft: Radius.circular(50)
-            )
-          ),
-        )
       ],
     ),
   );
   }
   );
+  }
+
+  profileContent() async{
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.profileId)
+        .collection('userPost').orderBy('createdAt', descending: true).get();
+    setState(() {
+      isLoading = false;
+      postCount = snapshot.docs.length;
+      post = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    });
+  }
+  totalStarCount() async{
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.profileId)
+        .collection('userPost').where('stars', isEqualTo: true).get();
+    setState(() {
+      isLoading = false;
+      starCount = snapshot.docs.length;
+    });
+  }
+  buildprofileContent(){
+      if(isLoading) {
+        return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+      }
+      return Column(children: post,);
+  }
+
+  @override
+  void initState() {
+    profileContent();
+    totalStarCount();
+    super.initState();
   }
 
   @override
@@ -226,7 +252,22 @@ return FutureBuilder(
           ),
           body: ListView(
             children: [
-              profileHeader()
+              profileHeader(),
+              const SizedBox(height: 20.0,),
+              Container(
+                decoration: const BoxDecoration(
+                    color: secondaryBackgroundColor,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(50),
+                        topLeft: Radius.circular(50)
+                    )
+                ),
+                child: Column(
+                  children: [
+                    buildprofileContent(),
+                  ],
+                ),
+              )
             ],
           )
         );
