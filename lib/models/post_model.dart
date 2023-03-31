@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
-import '../utils/utils.dart';
 
 class Post extends StatefulWidget {
   final String postId;
