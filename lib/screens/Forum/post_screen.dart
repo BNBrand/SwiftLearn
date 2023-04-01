@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/post_model.dart';
 import '../../utils/colors.dart';
 
 class PostScreen extends StatefulWidget {
-  const PostScreen({Key? key}) : super(key: key);
 
   @override
   State<PostScreen> createState() => _PostScreenState();
@@ -23,7 +21,7 @@ class _PostScreenState extends State<PostScreen> {
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(FirebaseAuth.instance.currentUser!.uid)
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc()
         .collection('userPost').orderBy('createdAt', descending: true).get();
     setState(() {
       isLoading = false;

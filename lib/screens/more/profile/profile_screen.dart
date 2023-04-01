@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/models/post_model.dart';
 import 'package:swift_learn/screens/more/profile/edit_profile.dart';
-import 'package:swift_learn/utils/utils.dart';
+import 'package:swift_learn/widgets/post_tile.dart';
 
 import '../../../models/user_model.dart';
 import '../../../utils/colors.dart';
@@ -21,12 +21,65 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
+  bool seclectGrid = true;
   bool isLoading = false;
   int postCount = 0;
   int starCount = 0;
-  List<Post> post = [];
+  List<Post> posts = [];
 
-  buildCountColumn(String label, int count){
+  gridViewPost(){
+    seclectGrid = true;
+    if(isLoading){
+      return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+    }
+    List<GridTile> gridTiles = [];
+    posts.forEach((post) {
+      gridTiles.add(GridTile(
+          child: PostTile(post: post,)
+      ));
+    });
+    return GridView.count(
+      crossAxisCount: 3,
+      childAspectRatio: 1.0,
+      mainAxisSpacing: 1.5,
+      crossAxisSpacing: 1.5,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: gridTiles,
+    );
+  }
+
+  selectedView(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+            onPressed: (){
+              setState(() {
+                seclectGrid = true;
+              });
+            },
+            icon: Icon(Icons.grid_on,
+            size: seclectGrid ? 25 : 18,
+            color: seclectGrid ? textColor1 : textColor2,
+            )
+        ),
+        IconButton(
+            onPressed: (){
+              setState(() {
+                seclectGrid = false;
+              });
+            },
+            icon: Icon(Icons.list,
+            size: seclectGrid ? 18 : 25,
+            color: seclectGrid ? textColor2 : textColor1,
+            )
+        )
+      ],
+    );
+  }
+
+  countColumn(String label, int count){
     return Column(
       children: [
         Text(count.toString(),
@@ -43,11 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 return FutureBuilder(
     future: FirebaseFirestore.instance.collection('users').doc(widget.profileId).get(),
     builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return showSnackBar(context, 'There is an error');
-      }
 
-      if (snapshot.connectionState == ConnectionState.waiting) {
+      if (!snapshot.hasData) {
         return const Center(child: CircularProgressIndicator(color: buttonColor2,));
       }
       Users user = Users.fromDocument(snapshot.data!);
@@ -170,19 +220,19 @@ return FutureBuilder(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            buildCountColumn('Post', postCount),
+                            countColumn('Post', postCount),
                             Container(
                               height: 50,
                               width: 5,
                               color: containerColor,
                             ),
-                            buildCountColumn('Followers', 0),
+                            countColumn('Followers', 0),
                             Container(
                               height: 50,
                               width: 5,
                               color: containerColor,
                             ),
-                            buildCountColumn('Following', 0),
+                            countColumn('Following', 0),
                           ],
                         ),
                          SizedBox(height: 25,),
@@ -215,7 +265,7 @@ return FutureBuilder(
     setState(() {
       isLoading = false;
       postCount = snapshot.docs.length;
-      post = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+      posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     });
   }
   totalStarCount() async{
@@ -229,11 +279,12 @@ return FutureBuilder(
       starCount = snapshot.docs.length;
     });
   }
-  buildprofileContent(){
+  listViewPost(){
+    seclectGrid = false;
       if(isLoading) {
         return const Center(child: CircularProgressIndicator(color: buttonColor2,));
       }
-      return Column(children: post,);
+      return Column(children: posts,);
   }
 
   @override
@@ -262,9 +313,15 @@ return FutureBuilder(
                         topLeft: Radius.circular(50)
                     )
                 ),
-                child: Column(
+                child: posts.isEmpty ? Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: const Center(child: Text('No post available')),
+                ) :
+                Column(
                   children: [
-                    buildprofileContent(),
+                    selectedView(),
+                    const Divider(),
+                    seclectGrid ? gridViewPost() : listViewPost()
                   ],
                 ),
               )

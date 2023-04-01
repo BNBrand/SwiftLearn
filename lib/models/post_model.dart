@@ -2,23 +2,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:swift_learn/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
 
 class Post extends StatefulWidget {
   final String postId;
-  final String uid;
+  final String ownerId;
   final String caption;
   final String email;
   final String photoURL;
   final String displayName;
-  final String postImange;
+  final String postImage;
   final dynamic stars;
 
   Post({
-    required this.postImange,
-    required this.uid,
+    required this.postImage,
+    required this.ownerId,
     required this.email,
     required this.photoURL,
     required this.postId,
@@ -29,8 +30,8 @@ class Post extends StatefulWidget {
 
   factory  Post.fromDocument(DocumentSnapshot doc){
     return Post(
-      uid: FirebaseAuth.instance.currentUser!.uid,
-      postImange: doc['postImage'],
+      ownerId: doc['ownerId'],
+      postImage: doc['postImage'],
       postId: doc['postId'],
       displayName: doc['displayName'],
       photoURL: doc['photoURL'],
@@ -56,8 +57,8 @@ class Post extends StatefulWidget {
   @override
   State<Post> createState() => _PostState(
     postId: postId,
-    postImange: postImange,
-    uid: uid,
+    postImage: postImage,
+    ownerId: ownerId,
     photoURL: photoURL,
     displayName: displayName,
     caption: caption,
@@ -70,18 +71,19 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
 
   final String postId;
-  final String uid;
+  final String ownerId;
   final String caption;
   final String email;
   final String photoURL;
   final String displayName;
-  final String postImange;
+  final String postImage;
   int likeCount;
   Map stars;
+  bool isStarred = false;
 
   _PostState({
-    required this.postImange,
-    required this.uid,
+    required this.postImage,
+    required this.ownerId,
     required this.email,
     required this.photoURL,
     required this.postId,
@@ -91,34 +93,57 @@ class _PostState extends State<Post> {
     required this.likeCount,
   });
 
-  buildPostHeader(){
-    return FutureBuilder(
-        future: FirebaseFirestore.instance.collection('posts').doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection('userPost').doc(Uuid().v4()).get(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error loading caption');
-          }
+  handleStarPost(){
+   bool _isStarred = stars[ownerId] == true;
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+   if(_isStarred){
+     FirebaseFirestore.instance.collection('posts').doc(ownerId)
+         .collection('userPost').doc(Uuid().v4()).update({
+       'stars.${FirebaseAuth.instance.currentUser!.uid}': false
+     });
+     setState(() {
+       likeCount -=1;
+       isStarred = false;
+       stars[ownerId] == false;
+     });
+   }else if(!_isStarred){
+     FirebaseFirestore.instance.collection('posts').doc(ownerId)
+         .collection('userPost').doc(Uuid().v4()).update({
+       'stars.${FirebaseAuth.instance.currentUser!.uid}': true
+     });
+     setState(() {
+       likeCount +=1;
+       isStarred = true;
+       stars[ownerId] == true;
+     });
+   }
+  }
+
+  buildPostHeader(){
+        return FutureBuilder(
+            future: FirebaseFirestore.instance.collection('users').doc(ownerId).get(),
+            builder: (context, snapshot) {
+
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+              }
+              Users user = Users.fromDocument(snapshot.data!);
+            return ListTile(
+              leading: GestureDetector(
+                onTap: (){},
+                child: CircleAvatar(
+                  backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                ),
+              ),
+              title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
+              subtitle: Text(user.email,overflow: TextOverflow.ellipsis,),
+              trailing: IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: (){},
+              ),
+            );
           }
-        return ListTile(
-          leading: GestureDetector(
-            onTap: (){},
-            child: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(photoURL),
-            ),
-          ),
-          title: Text(displayName,overflow: TextOverflow.ellipsis,),
-          subtitle: Text(email,overflow: TextOverflow.ellipsis,),
-          trailing: IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: (){},
-          ),
         );
-      }
-    );
   }
   buildCaption(){
     return Padding(
@@ -129,7 +154,7 @@ class _PostState extends State<Post> {
   buildPostImage(){
     return GestureDetector(
           onTap: (){},
-          onLongPress: (){},
+          onLongPress: handleStarPost,
           child: Container(
             height: 250.0,
             width: MediaQuery.of(context).size.width,
@@ -139,7 +164,7 @@ class _PostState extends State<Post> {
                 child: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: CachedNetworkImageProvider(postImange),
+                      image: CachedNetworkImageProvider(postImage),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -169,12 +194,14 @@ class _PostState extends State<Post> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                  onPressed: (){},
-                  icon: Icon(Icons.star)
+                  onPressed: handleStarPost,
+                  icon: Icon(Icons.star,
+                  color: isStarred ? starColor : textColor1,
+                  )
               ),
               IconButton(
                   onPressed: (){},
-                  icon: Icon(Icons.comment)
+                  icon: Icon(Icons.comment,color: buttonColor2,)
               )
             ],
           ),
@@ -190,6 +217,7 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
+    isStarred = (stars[ownerId] == true);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(

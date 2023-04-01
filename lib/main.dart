@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
-        '/uploadForm': (context) => const UploadForm(),
+        '/uploadForm': (context) => UploadForm(),
         '/profileScreen': (context) => ProfileScreen(profileId: FirebaseAuth.instance.currentUser!.uid),
       },
       home: StreamBuilder(

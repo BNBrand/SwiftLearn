@@ -14,7 +14,6 @@ import 'package:swift_learn/widgets/custom_button.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadForm extends StatefulWidget {
-  const UploadForm({Key? key}) : super(key: key);
 
   @override
   State<UploadForm> createState() => _UploadFormState();
@@ -136,7 +135,7 @@ class _UploadFormState extends State<UploadForm> {
       FirebaseFirestore.instance.collection('posts').doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('userPost').doc(postId).set({
         'postId': postId,
-        'uid': FirebaseAuth.instance.currentUser!.uid,
+        'ownerId': FirebaseAuth.instance.currentUser!.uid,
         'displayName': displayName,
         'photoURL': photoURL,
         'email': email,
@@ -220,7 +219,7 @@ class _UploadFormState extends State<UploadForm> {
             ) : TextButton.icon(
               onPressed: (){
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                  return const PostScreen();
+                  return PostScreen();
                 }));
               },
               icon: const Icon(Icons.cancel,color: textColor1,),
@@ -272,7 +271,7 @@ class _UploadFormState extends State<UploadForm> {
                   TextButton.icon(
                     onPressed: (){
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                        return const PostScreen();
+                        return PostScreen();
                       }));
                     },
                     icon: const Icon(Icons.cancel,color: textColor1,),

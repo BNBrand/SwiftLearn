@@ -20,28 +20,29 @@ class _LogoutScreenState extends State<LogoutScreen> {
         builder: (context){
           return AlertDialog(
               backgroundColor: backgroundColor,
-              title: const Text('Do you want to logout'),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton.icon(
-                      onPressed: () async{
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text('Do you want to logout?'),
+              ),
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () async{
                         AuthMethods().signOut();
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                          return const LoginScreen();
+                          return LoginScreen();
                         }));
                       },
-                      icon: Icon(Icons.check, color: Colors.green,),
-                      label: Text('Yes',style: TextStyle(color: textColor1),)
-                  ),
-                  TextButton.icon(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(Icons.clear,color: Colors.red,),
-                      label: Text('No',style: TextStyle(color: textColor1),)
-                  ),
-                ],
+                        child: Text('Yes',style: TextStyle(color: textColor1),)),
+                     SizedBox(),
+                     InkWell(
+                       onTap: ()=> Navigator.pop(context),
+                         child: Text('No',style: TextStyle(color: textColor1),))
+                  ],
+                ),
               )
           );
         }
