@@ -21,8 +21,7 @@ class _PostScreenState extends State<PostScreen> {
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc()
-        .collection('userPost').orderBy('createdAt', descending: true).get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').orderBy('createdAt', descending: true).get();
     setState(() {
       isLoading = false;
       postCount = snapshot.docs.length;

@@ -260,8 +260,7 @@ return FutureBuilder(
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.profileId)
-        .collection('userPost').orderBy('createdAt', descending: true).get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('ownerId', isEqualTo: widget.profileId).orderBy('createdAt', descending: true).get();
     setState(() {
       isLoading = false;
       postCount = snapshot.docs.length;
@@ -272,8 +271,7 @@ return FutureBuilder(
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.profileId)
-        .collection('userPost').where('stars', isEqualTo: true).get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('ownerId', isEqualTo: widget.profileId).orderBy('createdAt', descending: true).get();
     setState(() {
       isLoading = false;
       starCount = snapshot.docs.length;

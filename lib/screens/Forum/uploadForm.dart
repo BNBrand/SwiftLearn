@@ -131,9 +131,9 @@ class _UploadFormState extends State<UploadForm> {
       final ref = FirebaseStorage.instance.ref().child('postImages').child('post_$postId.jpg');
       await ref.putFile(imageFile!);
       imageUrl = await ref.getDownloadURL();
-      
-      FirebaseFirestore.instance.collection('posts').doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('userPost').doc(postId).set({
+
+      FirebaseFirestore.instance.collection('posts')
+          .doc(DateTime.now().millisecondsSinceEpoch.toString()).set({
         'postId': postId,
         'ownerId': FirebaseAuth.instance.currentUser!.uid,
         'displayName': displayName,
