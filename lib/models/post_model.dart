@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/models/user_model.dart';
+import 'package:swift_learn/screens/Forum/image_view.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 
 import '../utils/colors.dart';
@@ -179,10 +180,13 @@ class _PostState extends State<Post> {
   }
   buildPostImage(){
     return GestureDetector(
-          onTap: (){},
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context){
+              return ImageView(buildPostFooter: buildPostFooter, postImage: postImage);
+            }));
+          },
           onLongPress: handleStarPost,
           child: Container(
-            height: 250.0,
             width: MediaQuery.of(context).size.width,
             child: Center(
               child: AspectRatio(

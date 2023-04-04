@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Users{
   String displayName;
@@ -18,7 +17,7 @@ class Users{
 
   factory  Users.fromDocument(DocumentSnapshot doc){
     return Users(
-      uid: FirebaseAuth.instance.currentUser!.uid,
+      uid: doc['uid'],
       displayName: doc['displayName'],
       photoURL: doc['photoURL'],
       email: doc['email'],

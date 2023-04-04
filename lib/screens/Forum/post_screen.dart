@@ -13,8 +13,6 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
 
   bool isLoading = false;
-  int postCount = 0;
-  int starCount = 0;
   List<Post> post = [];
 
   postsContent() async{
@@ -24,7 +22,6 @@ class _PostScreenState extends State<PostScreen> {
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').orderBy('createdAt', descending: true).get();
     setState(() {
       isLoading = false;
-      postCount = snapshot.docs.length;
       post = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     });
   }
