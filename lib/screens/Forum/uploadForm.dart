@@ -133,7 +133,7 @@ class _UploadFormState extends State<UploadForm> {
       imageUrl = await ref.getDownloadURL();
 
       FirebaseFirestore.instance.collection('posts')
-          .doc(DateTime.now().millisecondsSinceEpoch.toString()).set({
+          .doc(postId).set({
         'postId': postId,
         'ownerId': FirebaseAuth.instance.currentUser!.uid,
         'displayName': displayName,

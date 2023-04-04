@@ -79,8 +79,7 @@ class _PostState extends State<Post> {
   final String postImage;
   int likeCount;
   Map stars;
-  bool isStarred = false;
-  int starCount = 0;
+  bool? isStarred;
 
   _PostState({
     required this.postImage,
@@ -94,56 +93,56 @@ class _PostState extends State<Post> {
     required this.likeCount,
   });
 
-  // handleStarPost(){
-  //  bool _isStarred = stars[FirebaseAuth.instance.currentUser!.uid] == true;
-  //
-  //  if(_isStarred){
-  //    FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString()).update({
-  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': false
-  //    });
-  //    setState(() {
-  //      likeCount -=1;
-  //      isStarred = false;
-  //      stars[ownerId] == false;
-  //    });
-  //  }else if(!_isStarred){
-  //    FirebaseFirestore.instance.collection('posts')
-  //        .doc(DateTime.now().millisecondsSinceEpoch.toString()).update({
-  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': true
-  //    });
-  //    setState(() {
-  //      likeCount +=1;
-  //      isStarred = true;
-  //      stars[ownerId] == true;
-  //    });
-  //  }
+  handleStarPost(){
+   bool isLiked = stars[FirebaseAuth.instance.currentUser!.uid] == true;
+
+   if(isLiked){
+     FirebaseFirestore.instance.collection('posts').doc(postId).update({
+       'stars.${FirebaseAuth.instance.currentUser!.uid}': false
+     });
+     setState(() {
+       likeCount -=1;
+       isStarred = false;
+       stars[ownerId] = false;
+     });
+   }else if(!isLiked){
+     FirebaseFirestore.instance.collection('posts')
+         .doc(postId).update({
+       'stars.${FirebaseAuth.instance.currentUser!.uid}': true
+     });
+     setState(() {
+       likeCount +=1;
+       isStarred = true;
+       stars[ownerId] = true;
+     });
+   }
+  }
+  // handleStarPost() async{
+  //   isStarred = true;
+  //   await FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
+  //       .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).
+  //   set({
+  //     'star' : isStarred
+  //   });
+  //   QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('postId', isEqualTo: postId).get();
+  //   setState(() {
+  //     starCount = snapshot.docs.length;
+  //   });
   // }
-  handleStarPost() async{
-    isStarred = true;
-    await FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
-        .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).
-    set({
-      'star' : isStarred
-    });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('postId', isEqualTo: postId).get();
-    setState(() {
-      starCount = snapshot.docs.length;
-    });
-  }
-  handleStarPostCount() async{
-    if(isStarred){
-      await handleStarPost();
-      setState(() {
-        isStarred = true;
-      });
-    }else{
-      await  FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
-          .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).delete();
-      setState(() {
-        isStarred = false;
-      });
-    }
-  }
+  // handleStarPostCount() async{
+  //   if(isStarred){
+  //     await handleStarPost();
+  //     setState(() {
+  //       isStarred = true;
+  //     });
+  //   }else{
+  //     await  FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
+  //         .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).delete();
+  //     setState(() {
+  //       isStarred = false;
+  //     });
+  //   }
+  // }
 
   buildPostHeader(){
         return FutureBuilder(
@@ -211,7 +210,7 @@ class _PostState extends State<Post> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('$starCount Stars'),
+                Text('$likeCount Stars'),
                 Text('$comments Comments')
               ],
             ),
@@ -221,9 +220,9 @@ class _PostState extends State<Post> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                  onPressed: handleStarPostCount,
+                  onPressed: handleStarPost,
                   icon: Icon(Icons.star,
-                  color: isStarred ? starColor : textColor1,
+                  color: isStarred != null && isStarred! ? starColor : textColor2,
                   )
               ),
               IconButton(
