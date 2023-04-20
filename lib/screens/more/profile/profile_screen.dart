@@ -148,7 +148,7 @@ return FutureBuilder(
                                   Row(
                                     children: [
                                       Icon(Icons.star,color: starColor,),
-                                      Text('${starCount.toString()} Stars',style: TextStyle(color: textColor1),),
+                                      Text('${user.totalStars.toString()} Stars',style: TextStyle(color: textColor1),),
                                     ],
                                   ),
                                 ],
@@ -267,16 +267,6 @@ return FutureBuilder(
       posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     });
   }
-  totalStarCount() async{
-    setState(() {
-      isLoading = true;
-    });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('ownerId', isEqualTo: widget.profileId).orderBy('createdAt', descending: true).get();
-    setState(() {
-      isLoading = false;
-      starCount = snapshot.docs.length;
-    });
-  }
   listViewPost(){
     seclectGrid = false;
       if(isLoading) {
@@ -288,7 +278,6 @@ return FutureBuilder(
   @override
   void initState() {
     profileContent();
-    totalStarCount();
     super.initState();
   }
 

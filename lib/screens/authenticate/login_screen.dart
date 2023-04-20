@@ -288,8 +288,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       'email' : emailController.text,
                       'uid': FirebaseAuth.instance.currentUser!.uid,
                       'photoURL': imageUrl,
-                      'createdAt': DateTime.now(),
-                      'bio': ''
+                      'createdAt': DateTime.now().toString(),
+                      'bio': '',
+                      'totalStars': 0
                     }).then((value) => {
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
                         return HomeScreen();

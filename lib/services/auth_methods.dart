@@ -9,6 +9,7 @@ class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Users? currentUser;
+  int totalStars = 0;
 
   Stream<User?> get authChanges => _auth.authStateChanges();
   User get user => _auth.currentUser!;
@@ -39,8 +40,9 @@ class AuthMethods {
             'email' : user.email,
             'uid': user.uid,
             'photoURL': user.photoURL,
-            'createdAt': DateTime.now(),
-            'bio': ''
+            'createdAt': DateTime.now().toString(),
+            'bio': '',
+            'totalStars': totalStars
           });
            doc = await _firestore.collection('users').doc(user.uid).get();
         }
@@ -90,8 +92,9 @@ class AuthMethods {
             'email' : user.email,
             'uid': user.uid,
             'photoURL': user.photoURL,
-            'createdAt': DateTime.now(),
-            'bio': ''
+            'createdAt': DateTime.now().toString(),
+            'bio': '',
+            'totalStars': totalStars
           });
         }
         res = true;

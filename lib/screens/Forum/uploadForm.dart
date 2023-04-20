@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:swift_learn/screens/Forum/post_screen.dart';
+import 'package:swift_learn/screens/Forum/forum_screen.dart';
 import 'package:swift_learn/utils/colors.dart';
 import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
@@ -142,7 +142,7 @@ class _UploadFormState extends State<UploadForm> {
         'postImage': imageUrl,
         'caption': captionController.text.trim(),
         'createdAt': DateTime.now(),
-        'stars': {},
+        'stars': 0,
       });
       setState(() {
         imageFile = null;

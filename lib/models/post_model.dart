@@ -1,3 +1,4 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,7 @@ class Post extends StatefulWidget {
   final String photoURL;
   final String displayName;
   final String postImage;
-  final dynamic stars;
+  final int stars;
 
   Post({
     required this.postImage,
@@ -42,19 +43,6 @@ class Post extends StatefulWidget {
     );
   }
 
-  int getLikeCount(stars){
-    if(stars == null){
-      return 0;
-    }
-    int count = 0;
-    stars.values.forEach((val){
-      if(val == true){
-        count +=1;
-      }
-    });
-    return count;
-  }
-
   @override
   State<Post> createState() => _PostState(
     postId: postId,
@@ -65,7 +53,7 @@ class Post extends StatefulWidget {
     caption: caption,
     email: email,
     stars: stars,
-    likeCount: getLikeCount(stars),
+    data: {},
   );
 }
 
@@ -78,9 +66,8 @@ class _PostState extends State<Post> {
   final String photoURL;
   final String displayName;
   final String postImage;
-  int likeCount;
-  Map stars;
-  bool? isStarred;
+  final int stars;
+  Map <String, dynamic> data;
 
   _PostState({
     required this.postImage,
@@ -89,61 +76,112 @@ class _PostState extends State<Post> {
     required this.photoURL,
     required this.postId,
     required this.caption,
-    required this.stars,
+    required this.data,
     required this.displayName,
-    required this.likeCount,
+    required this.stars,
   });
 
-  handleStarPost(){
-   bool isLiked = stars[FirebaseAuth.instance.currentUser!.uid] == true;
-
-   if(isLiked){
-     FirebaseFirestore.instance.collection('posts').doc(postId).update({
-       'stars.${FirebaseAuth.instance.currentUser!.uid}': false
-     });
-     setState(() {
-       likeCount -=1;
-       isStarred = false;
-       stars[ownerId] = false;
-     });
-   }else if(!isLiked){
-     FirebaseFirestore.instance.collection('posts')
-         .doc(postId).update({
-       'stars.${FirebaseAuth.instance.currentUser!.uid}': true
-     });
-     setState(() {
-       likeCount +=1;
-       isStarred = true;
-       stars[ownerId] = true;
-     });
+  // handleStarPost(){
+  //  bool isLiked = data[FirebaseAuth.instance.currentUser!.uid] == true;
+  //
+  //  if(isLiked){
+  //    FirebaseFirestore.instance.collection('posts').doc(postId).update({
+  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': false
+  //    });
+  //    setState(() {
+  //      likeCount -=1;
+  //      isStarred = false;
+  //      data[ownerId] = false;
+  //    });
+  //  }else if(!isLiked){
+  //    FirebaseFirestore.instance.collection('posts')
+  //        .doc(postId).update({
+  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': true
+  //    });
+  //    setState(() {
+  //      likeCount +=1;
+  //      isStarred = true;
+  //      data[ownerId] = true;
+  //    });
+  //  }
+  // }
+ handleStar() async{
+   await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+    .get().then((value) => {
+      if(value.data() != null){
+        if(value.data()!.keys.contains(postId)){
+          FirebaseFirestore.instance.runTransaction((Transaction tx) async{
+            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
+            if(postSnapshot.exists){
+              await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .update({postId: FieldValue.delete()});
+            setState((){
+            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+                .then((value) => data = value.data()!);
+            });
+              setState(() {
+                tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+                  'stars': FieldValue.increment(-1)
+                });
+              });
+              tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
+                'totalStars': FieldValue.increment(-1)
+              });
+            }
+          }),
+        }else{
+          FirebaseFirestore.instance.runTransaction((tx) async{
+            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
+            if(postSnapshot.exists){
+             await  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .update({postId: true});
+            setState((){
+            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+                .then((value) => data = value.data()!);
+            });
+               setState(() {
+                 tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+                   'stars': FieldValue.increment(1)
+                 });
+               });
+             tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
+               'totalStars': FieldValue.increment(1)
+             });
+            }
+          }),
+        }
+      }else{
+        FirebaseFirestore.instance.runTransaction((tx) async{
+          DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
+          if(postSnapshot.exists){
+            await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                .set({postId: true});
+          setState((){
+          FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+              .then((value) => data = value.data()!);
+          });
+             setState(() {
+               tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+                 'stars': FieldValue.increment(1)
+               });
+             });
+            tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
+              'totalStars': FieldValue.increment(1)
+            });
+          }
+        }),
+      }
+    });
+   if(data != null){
+     if(data.containsKey(postId)){
+       setState(() {
+         stars;
+         starColor;
+         textColor1;
+       });
+     }
    }
-  }
-  // handleStarPost() async{
-  //   isStarred = true;
-  //   await FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
-  //       .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).
-  //   set({
-  //     'star' : isStarred
-  //   });
-  //   QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').where('postId', isEqualTo: postId).get();
-  //   setState(() {
-  //     starCount = snapshot.docs.length;
-  //   });
-  // }
-  // handleStarPostCount() async{
-  //   if(isStarred){
-  //     await handleStarPost();
-  //     setState(() {
-  //       isStarred = true;
-  //     });
-  //   }else{
-  //     await  FirebaseFirestore.instance.collection('posts').doc(DateTime.now().millisecondsSinceEpoch.toString())
-  //         .collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).delete();
-  //     setState(() {
-  //       isStarred = false;
-  //     });
-  //   }
-  // }
+ }
 
   buildPostHeader(){
         return FutureBuilder(
@@ -176,16 +214,23 @@ class _PostState extends State<Post> {
         );
   }
   buildCaption(){
-    return Text(caption);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(caption),
+        SizedBox(height: 3.0,)
+      ],
+    );
   }
   buildPostImage(){
-    return GestureDetector(
+    return InkWell(
           onTap: (){
             Navigator.push(context, MaterialPageRoute(builder: (context){
               return ImageView(buildPostFooter: buildPostFooter, postImage: postImage);
             }));
           },
-          onLongPress: handleStarPost,
+          onDoubleTap: handleStar,
           child: Container(
             width: MediaQuery.of(context).size.width,
             child: Center(
@@ -214,7 +259,7 @@ class _PostState extends State<Post> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('$likeCount Stars'),
+                Text('$stars Stars'),
                 Text('$comments Comments')
               ],
             ),
@@ -224,9 +269,10 @@ class _PostState extends State<Post> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                  onPressed: handleStarPost,
-                  icon: Icon(Icons.star,
-                  color: isStarred != null && isStarred! ? starColor : textColor2,
+                  onPressed: handleStar,
+                  icon:
+                  Icon(Icons.star,
+                  color: data.containsKey(postId)? starColor : textColor1,
                   )
               ),
               IconButton(
@@ -245,9 +291,19 @@ class _PostState extends State<Post> {
 
   int comments = 0;
 
+ @override
+  void initState() {
+   setState((){
+     FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid);
+     FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+         .then((value) => data = value.data()!);
+   });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    isStarred = (stars[ownerId] == true);
+    // isStarred = (data[ownerId] == true);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swift_learn/screens/Forum/post_screen.dart';
+import 'package:swift_learn/screens/Forum/forum_screen.dart';
 import 'package:swift_learn/screens/more/more.dart';
 import 'package:swift_learn/screens/search/search_screen.dart';
 import '../../utils/colors.dart';
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(
               Icons.question_answer,
             ),
-            label: 'Q&A',
+            label: 'Forum',
           ),
           BottomNavigationBarItem(
             icon: Icon(

@@ -6,13 +6,17 @@ class Users{
   String email;
   String uid;
   String bio;
+  String createdAt;
+  int totalStars;
 
   Users({
     required this.photoURL,
     required this.email,
     required this.displayName,
     required this.uid,
-    required this.bio
+    required this.bio,
+    required this.createdAt,
+    required this.totalStars
 });
 
   factory  Users.fromDocument(DocumentSnapshot doc){
@@ -22,6 +26,8 @@ class Users{
       photoURL: doc['photoURL'],
       email: doc['email'],
       bio: doc['bio'],
+      createdAt: doc['createdAt'],
+      totalStars: doc['totalStars'],
     );
   }
 
