@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/Forum/forum_screen.dart';
 import 'package:swift_learn/screens/more/more.dart';
-import 'package:swift_learn/screens/search/search_screen.dart';
+import 'package:swift_learn/screens/search/notes_screen.dart';
 import '../../utils/colors.dart';
 import 'home.dart';
 
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const Home(),
     PostScreen(),
     const Text('Contacts'),
-    const SearchScreen(),
+    const NoteScreen(),
     const MoreScreen()
   ];
 
@@ -61,9 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.search,
+              Icons.edit_note,
             ),
-            label: 'Search',
+            label: 'Notes',
           ),
           BottomNavigationBarItem(
             icon: Icon(

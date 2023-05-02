@@ -376,6 +376,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
            const Divider(thickness: 4, color: containerColor,),
            DropdownButton(
              value: widget.occupation,
+               dropdownColor: containerColor,
                items: items.map((String items){
                  return DropdownMenuItem(
                    value: items,

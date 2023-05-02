@@ -31,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool firstpage = true;
   String? imageUrl;
   File? imageFile;
+  bool showPass = false;
 
   void _getImageFromCamera() async{
     Navigator.pop(context);
@@ -130,10 +131,25 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 10.0,),
           TextFormField(
             controller: passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            obscureText: showPass ? false : true,
+            decoration: InputDecoration(
                 hintText: 'Enter Password',
                 filled: true,
+                suffixIcon: IconButton(
+                    onPressed: (){
+                      if(showPass){
+                        setState(() {
+                          showPass = false;
+                        });
+                      }else{
+                        setState(() {
+                          showPass = true;
+                        });
+                      }
+                    },
+                    icon: Icon(Icons.remove_red_eye,
+                      color: showPass ? buttonColor2 : textColor2,)
+                ),
                 fillColor: backgroundColor2,
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: secondaryBackgroundColor)
@@ -254,10 +270,25 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 10.0,),
           TextFormField(
             controller: passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            obscureText: showPass ? false : true,
+            decoration: InputDecoration(
                 hintText: 'Enter Password',
                 filled: true,
+                suffixIcon: IconButton(
+                  onPressed: (){
+                    if(showPass){
+                      setState(() {
+                        showPass = false;
+                      });
+                    }else{
+                      setState(() {
+                        showPass = true;
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.remove_red_eye,
+                    color: showPass ? buttonColor2 : textColor2,)
+                ),
                 fillColor: backgroundColor2,
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: secondaryBackgroundColor)
@@ -285,8 +316,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     imageUrl = await ref.getDownloadURL();
 
                     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-                      'displayName': nameController.text,
-                      'email' : emailController.text,
+                      'displayName': nameController.text.trim(),
+                      'email' : emailController.text.trim().toLowerCase(),
                       'uid': FirebaseAuth.instance.currentUser!.uid,
                       'photoURL': imageUrl,
                       'createdAt': DateTime.now().toString(),

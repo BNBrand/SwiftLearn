@@ -246,7 +246,7 @@ return FutureBuilder(
                            child: Container(
                              padding: const EdgeInsets.all(12),
                             color: backgroundColor2,
-                            child: user.occupation != '' ?
+                            child: user.school != '' ?
                             Text('${user.occupation} at ${user.school}')
                                 :
                              Text(user.occupation),
@@ -260,7 +260,7 @@ return FutureBuilder(
                             child: Text(user.level),
                           ),
                         ) : const SizedBox(),
-                        user.degree != '' || user.degree != null ? Padding(
+                        user.degree != '' ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
                           child: Container(
                             padding: const EdgeInsets.all(12),

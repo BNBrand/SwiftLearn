@@ -47,7 +47,7 @@ class _LandingScreenState extends State<LandingScreen> {
         'level': levelController.text.trim(),
         'school': schoolController.text.trim(),
         'department': departmentController.text.trim(),
-        'degree' : isStudent ? degreeController.text.trim() : FieldValue.delete(),
+        'degree' : isStudent ? degreeController.text.trim() : '',
         'bio': bioController.text.trim()
       });
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
