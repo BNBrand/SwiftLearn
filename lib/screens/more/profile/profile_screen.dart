@@ -105,7 +105,7 @@ return FutureBuilder(
     child: Column(
       children: [
         Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: 550,
           color: backgroundColor,
           child: LayoutBuilder(builder: (context, constraints){
             double innerHeight = constraints.maxHeight;
@@ -120,7 +120,7 @@ return FutureBuilder(
                     children: [
                       Container(height: 70,),
                       Container(
-                        height: innerHeight * 0.8,
+                        height: innerHeight * 0.85,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           color: secondaryBackgroundColor,
@@ -168,6 +168,11 @@ return FutureBuilder(
                                       email: user.email,
                                       bio: user.bio,
                                       uid: user.uid,
+                                      degree: user.degree,
+                                      occupation: user.occupation,
+                                      department: user.department,
+                                      level: user.level,
+                                      school: user.school,
                                     );
                                   }));
                                 },
@@ -235,12 +240,42 @@ return FutureBuilder(
                             countColumn('Following', 0),
                           ],
                         ),
-                         SizedBox(height: 25,),
-                         Container(
-                           padding: EdgeInsets.all(12),
-                          color: backgroundColor2,
-                          child: Text(user.bio),
-                        )
+                         SizedBox(height: 20,),
+                         Padding(
+                           padding: const EdgeInsets.symmetric(vertical: 5.0),
+                           child: Container(
+                             padding: const EdgeInsets.all(12),
+                            color: backgroundColor2,
+                            child: user.occupation != '' ?
+                            Text('${user.occupation} at ${user.school}')
+                                :
+                             Text(user.occupation),
+                        ),
+                         ),
+                        user.level != '' ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            color: backgroundColor2,
+                            child: Text(user.level),
+                          ),
+                        ) : const SizedBox(),
+                        user.degree != '' || user.degree != null ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            color: backgroundColor2,
+                            child: Text('Aiming for ${user.degree} in the department of ${user.department}'),
+                          ),
+                        ) : const SizedBox(),
+                        user.bio != '' ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            color: backgroundColor2,
+                            child: Text('Interests : ${user.bio}'),
+                          ),
+                        ) : const SizedBox(),
                       ],
                     ),
                   ),

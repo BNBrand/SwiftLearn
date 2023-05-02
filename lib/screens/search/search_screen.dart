@@ -52,8 +52,8 @@ class _SearchScreenState extends State<SearchScreen> {
                      backgroundColor: secondaryBackgroundColor,
                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
                    ),
-                   title: Text(user.displayName),
-                   subtitle: Text(user.email),
+                   title: Text(user.displayName, overflow: TextOverflow.ellipsis,),
+                   subtitle: Text(user.email, overflow: TextOverflow.ellipsis),
                    trailing: user.uid != FirebaseAuth.instance.currentUser!.uid ? TextButton.icon(
                      label: Text('Follow',style: TextStyle(color: buttonColor2),),
                      icon: Icon(Icons.add,color: buttonColor2,),

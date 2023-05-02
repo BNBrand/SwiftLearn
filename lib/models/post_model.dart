@@ -4,9 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/models/user_model.dart';
+import 'package:swift_learn/screens/Forum/comments.dart';
 import 'package:swift_learn/screens/Forum/image_view.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
-
+import 'package:timeago/timeago.dart' as timeago;
 import '../utils/colors.dart';
 
 class Post extends StatefulWidget {
@@ -17,7 +18,9 @@ class Post extends StatefulWidget {
   final String photoURL;
   final String displayName;
   final String postImage;
+  final Timestamp createdAt;
   final int stars;
+  final int comments;
 
   Post({
     required this.postImage,
@@ -27,7 +30,9 @@ class Post extends StatefulWidget {
     required this.postId,
     required this.caption,
     required this.stars,
-    required this.displayName
+    required this.displayName,
+    required this.comments,
+    required this.createdAt
   });
 
   factory  Post.fromDocument(DocumentSnapshot doc){
@@ -40,6 +45,8 @@ class Post extends StatefulWidget {
       email: doc['email'],
       caption: doc['caption'],
       stars: doc['stars'],
+      comments: doc['comments'],
+      createdAt: doc['createdAt'],
     );
   }
 
@@ -54,12 +61,15 @@ class Post extends StatefulWidget {
     email: email,
     stars: stars,
     data: {},
+    comments: comments,
+    createdAt: createdAt,
   );
 }
 
 class _PostState extends State<Post> {
 
   final String postId;
+  final Timestamp createdAt;
   final String ownerId;
   final String caption;
   final String email;
@@ -67,9 +77,15 @@ class _PostState extends State<Post> {
   final String displayName;
   final String postImage;
   final int stars;
+  final int comments;
   Map <String, dynamic> data;
+  String? displayNameUser;
+  String? photoURLUser;
+  int currentStars = 0;
+  int currentComments = 0;
 
   _PostState({
+    required this.createdAt,
     required this.postImage,
     required this.ownerId,
     required this.email,
@@ -79,33 +95,47 @@ class _PostState extends State<Post> {
     required this.data,
     required this.displayName,
     required this.stars,
+    required this.comments
   });
 
-  // handleStarPost(){
-  //  bool isLiked = data[FirebaseAuth.instance.currentUser!.uid] == true;
-  //
-  //  if(isLiked){
-  //    FirebaseFirestore.instance.collection('posts').doc(postId).update({
-  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': false
-  //    });
-  //    setState(() {
-  //      likeCount -=1;
-  //      isStarred = false;
-  //      data[ownerId] = false;
-  //    });
-  //  }else if(!isLiked){
-  //    FirebaseFirestore.instance.collection('posts')
-  //        .doc(postId).update({
-  //      'stars.${FirebaseAuth.instance.currentUser!.uid}': true
-  //    });
-  //    setState(() {
-  //      likeCount +=1;
-  //      isStarred = true;
-  //      data[ownerId] = true;
-  //    });
-  //  }
-  // }
- handleStar() async{
+  Future _getData() async{
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+        .get().then((snapshot) async{
+      if(snapshot.exists){
+        setState(() {
+          displayNameUser = snapshot.data()!['displayName'];
+          photoURLUser = snapshot.data()!['photoURL'];
+        });
+      }
+    });
+    await FirebaseFirestore.instance.collection('posts').doc(postId)
+        .get().then((snapshot) async{
+      if(snapshot.exists){
+        setState(() {
+          currentStars = snapshot.data()!['stars'];
+          currentComments = snapshot.data()!['comments'];
+        });
+      }
+    });
+  }
+  handleStarFeed() async{
+    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
+        .collection('feedData').doc(postId)
+        .set({
+      'type': 'star',
+      'displayName': displayNameUser,
+      'photoURL': photoURLUser,
+      'uid': FirebaseAuth.instance.currentUser!.uid,
+      'postId': postId,
+      'createdAt': Timestamp.now(),
+      'postImage': postImage
+    });
+  }
+  handleUnStarFeed() async {
+    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
+        .collection('feedData').doc(postId).delete();
+  }
+  handleStar() async{
    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
     .get().then((value) => {
       if(value.data() != null){
@@ -115,18 +145,17 @@ class _PostState extends State<Post> {
             if(postSnapshot.exists){
               await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
                   .update({postId: FieldValue.delete()});
-            setState((){
+
             FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
                 .then((value) => data = value.data()!);
-            });
-              setState(() {
+
                 tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
                   'stars': FieldValue.increment(-1)
-                });
               });
               tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
                 'totalStars': FieldValue.increment(-1)
               });
+              handleUnStarFeed();
             }
           }),
         }else{
@@ -139,14 +168,15 @@ class _PostState extends State<Post> {
             FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
                 .then((value) => data = value.data()!);
             });
-               setState(() {
+
                  tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
                    'stars': FieldValue.increment(1)
-                 });
+
                });
              tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
                'totalStars': FieldValue.increment(1)
              });
+             handleStarFeed();
             }
           }),
         }
@@ -156,33 +186,23 @@ class _PostState extends State<Post> {
           if(postSnapshot.exists){
             await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
                 .set({postId: true});
-          setState((){
+
           FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
               .then((value) => data = value.data()!);
-          });
-             setState(() {
+
                tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
                  'stars': FieldValue.increment(1)
-               });
+
              });
             tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
               'totalStars': FieldValue.increment(1)
             });
+            handleStarFeed();
           }
         }),
       }
     });
-   if(data != null){
-     if(data.containsKey(postId)){
-       setState(() {
-         stars;
-         starColor;
-         textColor1;
-       });
-     }
-   }
  }
-
   buildPostHeader(){
         return FutureBuilder(
             future: FirebaseFirestore.instance.collection('users').doc(ownerId).get(),
@@ -204,7 +224,7 @@ class _PostState extends State<Post> {
                 ),
               ),
               title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
-              subtitle: Text(user.email,overflow: TextOverflow.ellipsis,),
+              subtitle: Text(timeago.format(createdAt.toDate())),
               trailing: IconButton(
                 icon: Icon(Icons.more_vert),
                 onPressed: (){},
@@ -219,7 +239,7 @@ class _PostState extends State<Post> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(caption),
-        SizedBox(height: 3.0,)
+        SizedBox(height: 5.0,)
       ],
     );
   }
@@ -230,7 +250,11 @@ class _PostState extends State<Post> {
               return ImageView(buildPostFooter: buildPostFooter, postImage: postImage);
             }));
           },
-          onDoubleTap: handleStar,
+          onDoubleTap: (){
+              setState(() {
+                handleStar();
+              });
+          },
           child: Container(
             width: MediaQuery.of(context).size.width,
             child: Center(
@@ -259,8 +283,8 @@ class _PostState extends State<Post> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('$stars Stars'),
-                Text('$comments Comments')
+                Text('$currentStars Stars'),
+                Text('$currentComments Comments')
               ],
             ),
           ),
@@ -269,14 +293,24 @@ class _PostState extends State<Post> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                  onPressed: handleStar,
+                  onPressed: (){
+                    setState(() {
+                      handleStar();
+                    });
+                  },
                   icon:
                   Icon(Icons.star,
                   color: data.containsKey(postId)? starColor : textColor1,
                   )
               ),
               IconButton(
-                  onPressed: (){},
+                  onPressed: ()=> showComments(
+                      context,
+                      postId: postId,
+                      postImage: postImage,
+                      ownerId: ownerId
+                    ),
+
                   icon: Icon(Icons.comment,color: buttonColor2,)
               )
             ],
@@ -288,22 +322,27 @@ class _PostState extends State<Post> {
       ),
     );
   }
-
-  int comments = 0;
+  showComments(BuildContext context, { required String postId, required String ownerId, required String postImage}){
+  Navigator.push(context, MaterialPageRoute(builder: (context){
+  return Comments(
+          postId: postId,
+          postImage: postImage,
+          ownerId: ownerId
+      );
+    }));
+  }
 
  @override
   void initState() {
-   setState((){
+    _getData();
      FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid);
      FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
          .then((value) => data = value.data()!);
-   });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // isStarred = (data[ownerId] == true);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(

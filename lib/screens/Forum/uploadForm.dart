@@ -141,8 +141,9 @@ class _UploadFormState extends State<UploadForm> {
         'email': email,
         'postImage': imageUrl,
         'caption': captionController.text.trim(),
-        'createdAt': DateTime.now(),
+        'createdAt': Timestamp.now(),
         'stars': 0,
+        'comments': 0
       });
       setState(() {
         imageFile = null;

@@ -12,6 +12,7 @@ import 'package:swift_learn/utils/colors.dart';
 import '../../services/auth_methods.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_button.dart';
+import 'landing_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -279,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 );
                 try{
                   if (res) {
-                    final ref = FirebaseStorage.instance.ref().child('userimages').child(DateTime.now().microsecondsSinceEpoch.toString());
+                    final ref = FirebaseStorage.instance.ref().child('userImages').child(DateTime.now().microsecondsSinceEpoch.toString());
                     await ref.putFile(imageFile!);
                     imageUrl = await ref.getDownloadURL();
 
@@ -289,11 +290,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       'uid': FirebaseAuth.instance.currentUser!.uid,
                       'photoURL': imageUrl,
                       'createdAt': DateTime.now().toString(),
-                      'bio': '',
-                      'totalStars': 0
+                      'totalStars': 0,
+                      'occupation': 'Student',
+                      'level': '',
+                      'school': '',
+                      'department': '',
+                      'degree' : '',
+                      'bio': ''
                     }).then((value) => {
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                        return HomeScreen();
+                        return const LandingScreen();
                       }))
                     });
                   }
@@ -351,12 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomButton2(
                 text: 'Continue with Google',
                 onPressed: () async {
-                  bool res = await _authMethods.signInWithGoogle(context);
-                  if (res) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                      return HomeScreen();
-                    }));
-                  }
+                   await _authMethods.signInWithGoogle(context);
                 }, color: textColor1,
                 image: 'assets/images/google.png',
                 borderColor: buttonColor2,

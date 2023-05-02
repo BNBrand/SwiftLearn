@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:swift_learn/models/user_model.dart';
+import '../screens/authenticate/landing_screen.dart';
+import '../screens/home/home_screen.dart';
 import '../utils/utils.dart';
 
 class AuthMethods {
@@ -41,19 +43,34 @@ class AuthMethods {
             'uid': user.uid,
             'photoURL': user.photoURL,
             'createdAt': DateTime.now().toString(),
-            'bio': '',
-            'totalStars': totalStars
+            'totalStars': totalStars,
+            'occupation': 'Student',
+            'level': '',
+            'school': '',
+            'department': '',
+            'degree' : '',
+            'bio': ''
           });
            doc = await _firestore.collection('users').doc(user.uid).get();
         }
        currentUser = Users.fromDocument(doc);
         res = true;
+        if(userCredential.additionalUserInfo!.isNewUser){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+            return LandingScreen();
+          }));
+        }else{
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+            return const HomeScreen();
+          }));
+        }
       }
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!);
       res = false;
     }
     return res;
+
   }
   //Sign in with email and password
   Future<bool> signInWithEmailAndPass(BuildContext context,String email,String password) async{

@@ -8,6 +8,11 @@ class Users{
   String bio;
   String createdAt;
   int totalStars;
+  String occupation;
+  String school;
+  String level;
+  String department;
+  String degree;
 
   Users({
     required this.photoURL,
@@ -16,7 +21,12 @@ class Users{
     required this.uid,
     required this.bio,
     required this.createdAt,
-    required this.totalStars
+    required this.totalStars,
+    required this.degree,
+    required this.occupation,
+    required this.level,
+    required this.department,
+    required this.school,
 });
 
   factory  Users.fromDocument(DocumentSnapshot doc){
@@ -28,6 +38,11 @@ class Users{
       bio: doc['bio'],
       createdAt: doc['createdAt'],
       totalStars: doc['totalStars'],
+      occupation: doc['occupation'],
+      school: doc['school'],
+      level: doc['level'],
+      department: doc['department'],
+      degree: doc['degree'],
     );
   }
 

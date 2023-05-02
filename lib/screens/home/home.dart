@@ -7,6 +7,7 @@ import 'package:swift_learn/utils/colors.dart';
 import '../../models/user_model.dart';
 import '../../utils/utils.dart';
 import '../../widgets/loading.dart';
+import '../authenticate/landing_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -65,9 +66,16 @@ class _HomeState extends State<Home> {
                 children: [
                   Text(user.displayName),
                   const SizedBox(height: 10),
-                  CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider(user.photoURL),
-                    radius: 50
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return LandingScreen();
+                      }));
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                      radius: 50
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(user.email),
