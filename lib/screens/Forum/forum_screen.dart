@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/post_model.dart';
 import '../../models/user_model.dart';
-import '../../utils/colors.dart';
+import '../../utils/color.dart';
 import '../more/profile/profile_screen.dart';
 
 class PostScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _PostScreenState extends State<PostScreen> {
   }
   buildpostsContent(){
     if(isLoading) {
-      return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+      return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
     }
     return Column(children: post,);
   }
@@ -56,12 +56,12 @@ class _PostScreenState extends State<PostScreen> {
           onSubmitted: handleSearch,
           decoration: InputDecoration(
               filled: true,
-              fillColor: backgroundColor2,
+              fillColor: CClass.bGColor2Theme(),
               border: InputBorder.none,
               hintText: 'Search',
-              prefixIcon: const Icon(Icons.search, color: textColor1,),
+              prefixIcon: Icon(Icons.search, color: CClass.textColorTheme(),),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, color: textColor1,),
+                icon: Icon(Icons.clear, color: CClass.textColorTheme(),),
                 onPressed: (){
                   setState(() {
                     searchController.clear();
@@ -75,7 +75,7 @@ class _PostScreenState extends State<PostScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.search, size: 80, color: containerColor,),
+              Icon(Icons.search, size: 80, color: CClass.containerColor,),
               Text('Search users')
             ],
           ),
@@ -104,7 +104,7 @@ class _PostScreenState extends State<PostScreen> {
         builder: (context, snapshot) {
 
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+            return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
           }
           List<Padding> searchResults = [];
           snapshot.data!.docs.forEach((doc) {
@@ -120,14 +120,14 @@ class _PostScreenState extends State<PostScreen> {
                   },
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: secondaryBackgroundColor,
+                      backgroundColor: CClass.secondaryBGColorTheme(),
                       backgroundImage: CachedNetworkImageProvider(user.photoURL),
                     ),
                     title: Text(user.displayName, overflow: TextOverflow.ellipsis,),
                     subtitle: Text(user.email, overflow: TextOverflow.ellipsis),
                     trailing: user.uid != FirebaseAuth.instance.currentUser!.uid ? TextButton.icon(
-                      label: Text('Follow',style: TextStyle(color: buttonColor2),),
-                      icon: Icon(Icons.add,color: buttonColor2,),
+                      label: Text('Follow',style: TextStyle(color: CClass.bTColor2Theme()),),
+                      icon: Icon(Icons.add,color: CClass.bTColor2Theme(),),
                       onPressed: (){},
                     )
                         :
@@ -157,12 +157,12 @@ class _PostScreenState extends State<PostScreen> {
         onPressed: (){
           Navigator.pushNamed(context, '/uploadForm');
         },
-        child: Icon(Icons.upload,color: textColor1,),
-        backgroundColor: buttonColor,
+        child: Icon(Icons.upload,color: CClass.textColorTheme(),),
+        backgroundColor: CClass.bTColorTheme(),
       ) : null,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: backgroundColor2,
+        backgroundColor: CClass.bGColor2Theme(),
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -177,7 +177,7 @@ class _PostScreenState extends State<PostScreen> {
                   });
                 },
                 child: Text('Post',style: TextStyle(
-                    color: isPost ? buttonColor2 : buttonColor,
+                    color: isPost ? CClass.bTColor2Theme() : CClass.bTColorTheme(),
                     fontSize: isPost ? 18 : 16
                 ),)
             ),
@@ -191,7 +191,7 @@ class _PostScreenState extends State<PostScreen> {
                   });
                 },
                 child: Text('Q&A',style: TextStyle(
-                    color: isQA ? buttonColor2 : buttonColor,
+                    color: isQA ? CClass.bTColor2Theme() : CClass.bTColorTheme(),
                     fontSize: isQA ? 18 : 16
                 ),)
             ),
@@ -205,7 +205,7 @@ class _PostScreenState extends State<PostScreen> {
                   });
                 },
                 child: Text('Quiz',style: TextStyle(
-                    color: isQuiz ? buttonColor2 : buttonColor,
+                    color: isQuiz ? CClass.bTColor2Theme() : CClass.bTColorTheme(),
                     fontSize: isQuiz ? 18 : 16
                 ),)
             ),
@@ -219,7 +219,7 @@ class _PostScreenState extends State<PostScreen> {
                   });
                 },
                 child: Text('Search',style: TextStyle(
-                    color: isSearch ? buttonColor2 : buttonColor,
+                    color: isSearch ? CClass.bTColor2Theme() : CClass.bTColorTheme(),
                     fontSize: isSearch ? 18 : 16
                 ),)
             ),

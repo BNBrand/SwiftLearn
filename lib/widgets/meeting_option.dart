@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swift_learn/utils/colors.dart';
+import 'package:swift_learn/utils/color.dart';
 
 class MeetingOption extends StatelessWidget {
   final String text;
@@ -16,7 +16,7 @@ class MeetingOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      color: secondaryBackgroundColor,
+      color: CClass.secondaryBGColorTheme(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

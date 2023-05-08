@@ -1,14 +1,13 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/models/user_model.dart';
 import 'package:swift_learn/screens/Forum/comments.dart';
-import 'package:swift_learn/screens/Forum/image_view.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../utils/colors.dart';
+import '../utils/color.dart';
+import '../widgets/loading_image.dart';
 
 class Post extends StatefulWidget {
   final String postId;
@@ -136,8 +135,8 @@ class _PostState extends State<Post> {
         .collection('feedData').doc(postId).delete();
   }
   handleStar() async{
-   await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-    .get().then((value) => {
+    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .get().then((value) => {
       if(value.data() != null){
         if(value.data()!.keys.contains(postId)){
           FirebaseFirestore.instance.runTransaction((Transaction tx) async{
@@ -146,11 +145,11 @@ class _PostState extends State<Post> {
               await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
                   .update({postId: FieldValue.delete()});
 
-            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                .then((value) => data = value.data()!);
+              FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+                  .then((value) => data = value.data()!);
 
-                tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-                  'stars': FieldValue.increment(-1)
+              tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+                'stars': FieldValue.increment(-1)
               });
               tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
                 'totalStars': FieldValue.increment(-1)
@@ -162,21 +161,21 @@ class _PostState extends State<Post> {
           FirebaseFirestore.instance.runTransaction((tx) async{
             DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
             if(postSnapshot.exists){
-             await  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+              await  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
                   .update({postId: true});
-            setState((){
-            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                .then((value) => data = value.data()!);
-            });
+              setState((){
+                FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+                    .then((value) => data = value.data()!);
+              });
 
-                 tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-                   'stars': FieldValue.increment(1)
+              tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+                'stars': FieldValue.increment(1)
 
-               });
-             tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
-               'totalStars': FieldValue.increment(1)
-             });
-             handleStarFeed();
+              });
+              tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
+                'totalStars': FieldValue.increment(1)
+              });
+              handleStarFeed();
             }
           }),
         }
@@ -187,13 +186,13 @@ class _PostState extends State<Post> {
             await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
                 .set({postId: true});
 
-          FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-              .then((value) => data = value.data()!);
+            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+                .then((value) => data = value.data()!);
 
-               tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-                 'stars': FieldValue.increment(1)
+            tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
+              'stars': FieldValue.increment(1)
 
-             });
+            });
             tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
               'totalStars': FieldValue.increment(1)
             });
@@ -202,36 +201,36 @@ class _PostState extends State<Post> {
         }),
       }
     });
- }
+  }
   buildPostHeader(){
-        return FutureBuilder(
-            future: FirebaseFirestore.instance.collection('users').doc(ownerId).get(),
-            builder: (context, snapshot) {
+    return FutureBuilder(
+        future: FirebaseFirestore.instance.collection('users').doc(ownerId).get(),
+        builder: (context, snapshot) {
 
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator(color: buttonColor2,));
-              }
-              Users user = Users.fromDocument(snapshot.data!);
-            return ListTile(
-              leading: GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
-                    return ProfileScreen(profileId: ownerId,);
-                  }));
-                },
-                child: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(user.photoURL),
-                ),
-              ),
-              title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
-              subtitle: Text(timeago.format(createdAt.toDate())),
-              trailing: IconButton(
-                icon: Icon(Icons.more_vert),
-                onPressed: (){},
-              ),
-            );
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator(color: CClass.bTColorTheme(),));
           }
-        );
+          Users user = Users.fromDocument(snapshot.data!);
+          return ListTile(
+            leading: GestureDetector(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context){
+                  return ProfileScreen(profileId: ownerId,);
+                }));
+              },
+              child: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(user.photoURL),
+              ),
+            ),
+            title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
+            subtitle: Text(timeago.format(createdAt.toDate())),
+            trailing: IconButton(
+              icon: Icon(Icons.more_vert),
+              onPressed: (){},
+            ),
+          );
+        }
+    );
   }
   buildCaption(){
     return Column(
@@ -245,33 +244,40 @@ class _PostState extends State<Post> {
   }
   buildPostImage(){
     return InkWell(
-          onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context){
-              return ImageView(buildPostFooter: buildPostFooter, postImage: postImage);
-            }));
-          },
-          onDoubleTap: (){
-              setState(() {
-                handleStar();
-              });
-          },
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(postImage),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+      onTap: (){
+        showDialog(
+            context: context,
+            builder: (context){
+              return AlertDialog(
+                content: cachedNetworkImage(postImage),
+                scrollable: true,
+                contentPadding: EdgeInsets.zero,
+              );
+            }
+        );
+      },
+      onDoubleTap: (){
+        setState(() {
+          handleStar();
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(postImage),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-        );
+        ),
+      ),
+    );
   }
   buildPostFooter(){
     return Padding(
@@ -300,7 +306,7 @@ class _PostState extends State<Post> {
                   },
                   icon:
                   Icon(Icons.star,
-                  color: data.containsKey(postId)? starColor : textColor1,
+                    color: data.containsKey(postId)? CClass.starColor : CClass.textColor2,
                   )
               ),
               IconButton(
@@ -309,9 +315,9 @@ class _PostState extends State<Post> {
                       postId: postId,
                       postImage: postImage,
                       ownerId: ownerId
-                    ),
+                  ),
 
-                  icon: Icon(Icons.comment,color: buttonColor2,)
+                  icon: Icon(Icons.comment,color: CClass.bTColor2Theme(),)
               )
             ],
           ),
@@ -323,8 +329,8 @@ class _PostState extends State<Post> {
     );
   }
   showComments(BuildContext context, { required String postId, required String ownerId, required String postImage}){
-  Navigator.push(context, MaterialPageRoute(builder: (context){
-  return Comments(
+    Navigator.push(context, MaterialPageRoute(builder: (context){
+      return Comments(
           postId: postId,
           postImage: postImage,
           ownerId: ownerId
@@ -332,12 +338,12 @@ class _PostState extends State<Post> {
     }));
   }
 
- @override
+  @override
   void initState() {
     _getData();
-     FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid);
-     FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-         .then((value) => data = value.data()!);
+    FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid);
+    FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
+        .then((value) => data = value.data()!);
     super.initState();
   }
 

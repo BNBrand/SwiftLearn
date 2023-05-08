@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swift_learn/utils/colors.dart';
+import 'package:swift_learn/utils/color.dart';
 
 import '../../models/user_model.dart';
 import '../../utils/utils.dart';
@@ -32,17 +32,18 @@ class _HomeState extends State<Home> {
           }
           Users user = Users.fromDocument(snapshot.data!);
         return Scaffold(
+          backgroundColor: CClass.bGColorTheme(),
           appBar: AppBar(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             elevation: 0.0,
           ),
           drawer: Drawer(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             child: Column(
               children: [
                 UserAccountsDrawerHeader(
                   decoration: BoxDecoration(
-                    color: secondaryBackgroundColor
+                    color: CClass.secondaryBGColorTheme()
                   ),
                   currentAccountPicture: GestureDetector(
                     onTap: (){
@@ -52,8 +53,8 @@ class _HomeState extends State<Home> {
                       backgroundImage: CachedNetworkImageProvider(user.photoURL),
                     ),
                   ),
-                  accountName: Text(user.displayName),
-                  accountEmail: Text(user.email),
+                  accountName: Text(user.displayName,style: TextStyle(color: CClass.textColorTheme()),),
+                  accountEmail: Text(user.email,style: TextStyle(color: CClass.textColorTheme())),
                 ),
               ],
             ),
@@ -64,7 +65,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(user.displayName),
+                  Text(user.displayName,style: TextStyle(color: CClass.textColorTheme())),
                   const SizedBox(height: 10),
                   GestureDetector(
                     onTap: (){
@@ -78,7 +79,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(user.email),
+                  Text(user.email,style: TextStyle(color: CClass.textColorTheme())),
                 ],
               ),
             ),

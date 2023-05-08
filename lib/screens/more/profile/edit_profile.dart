@@ -8,9 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
-import 'package:swift_learn/utils/colors.dart';
+import 'package:swift_learn/utils/color.dart';
 import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
+
+import '../../../widgets/custum_textField.dart';
+import '../../../widgets/loading_image.dart';
 
 class EditProfileScreen extends StatefulWidget {
   String? displayName;
@@ -89,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         context: context,
         builder: (context){
           return AlertDialog(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             title: const Text('Please choose an option'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -99,10 +102,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _getImageFromCamera();
                   },
                   child: Row(
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.all(4.0),
-                        child: Icon(Icons.camera, color: textColor1,),
+                        child: Icon(Icons.camera, color: CClass.textColorTheme(),),
                       ),
                       Text('Camera')
                     ],
@@ -175,86 +178,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Column(
       children: [
         SizedBox(height: 10.0,),
-        TextField(
+        CustumTextField(
           controller: levelController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: levelController.clear,
-              ),
-              labelText: 'Educational Level',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
+          labelText: 'Educational Level',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: schoolController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _schoolValue ? null : 'School must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: schoolController.clear,
-              ),
-              labelText: 'School',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _schoolValue ? null : 'School must be less than 50 characters',
+          labelText: 'School',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: departmentController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _departmentValue ? null : 'Department must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: departmentController.clear,
-              ),
-              labelText: 'Department',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _departmentValue ? null : 'Department must be less than 50 characters',
+          labelText: 'Department',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: degreeController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _degreeValue ? null : 'Degree program must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: degreeController.clear,
-              ),
-              labelText: 'Degree Program',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _degreeValue ? null : 'Degree program must be less than 50 characters',
+          labelText: 'Degree Program',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
-          controller: bioController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _bioValue ? null : 'Bio must be less than 100 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, color: textColor2,),
-                onPressed: bioController.clear,
-              ),
-              labelText: 'Interests /About Yourself (Optional)',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+        CustumTextField(
+            controller: bioController,
+            errorText: _bioValue ? null : 'Bio must be less than 100 characters',
+            labelText: 'Interests /About Yourself'
         ),
-        const Divider(color: containerColor, thickness: 2,),
       ],
     );
   }
@@ -263,70 +211,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Column(
       children: [
         SizedBox(height: 10.0,),
-        TextField(
+        CustumTextField(
           controller: levelController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _levelValue ? null : 'Level taught must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: levelController.clear,
-              ),
-              labelText: 'Level Taught',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
+          labelText: 'Level Taught',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: schoolController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _schoolValue ? null : 'School must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: schoolController.clear,
-              ),
-              labelText: 'School',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _schoolValue ? null : 'School must be less than 50 characters',
+          labelText: 'School',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: departmentController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _departmentValue ? null : 'Department must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: departmentController.clear,
-              ),
-              labelText: 'Department',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _departmentValue ? null : 'Department must be less than 50 characters',
+          labelText: 'Department',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
-          controller: bioController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _bioValue ? null : 'Bio must be less than 100 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, color: textColor2,),
-                onPressed: bioController.clear,
-              ),
-              labelText: 'Interests /About Yourself (Optional)',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+        CustumTextField(
+            controller: bioController,
+            errorText: _bioValue ? null : 'Bio must be less than 100 characters',
+            labelText: 'Interests /About Yourself'
         ),
-        const Divider(color: containerColor, thickness: 2,),
       ],
     );
   }
@@ -373,10 +277,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                style: TextStyle(fontSize: 20),
              ),
            ),
-           const Divider(thickness: 4, color: containerColor,),
+           Divider(thickness: 4, color: CClass.containerColor,),
            DropdownButton(
              value: widget.occupation,
-               dropdownColor: containerColor,
+               dropdownColor: CClass.containerColor,
                items: items.map((String items){
                  return DropdownMenuItem(
                    value: items,
@@ -398,14 +302,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                errorText: _nameValue ? null : 'Name is too short or empty',
                errorStyle: TextStyle(color: Colors.red),
                suffixIcon: IconButton(
-                 icon: const Icon(Icons.clear,color: textColor2,),
+                 icon: Icon(Icons.clear,color: CClass.textColor2,),
                  onPressed: nameController.clear,
                ),
                labelText: 'User Name',
-               labelStyle: TextStyle(color: textColor2)
+               labelStyle: TextStyle(color: CClass.textColor2)
              ),
            ),
-           const Divider(color: containerColor, thickness: 2,),
+           Divider(color: CClass.containerColor, thickness: 2,),
            isStudent ? studentDetail() : teacherDetail(),
            CustomButton(
                text: 'Update',
@@ -418,9 +322,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                    }));
                  }
                },
-               color: buttonColor,
+               color: CClass.bTColorTheme(),
                icon: Icons.update,
-               textColor: textColor1
+               textColor: CClass.textColorTheme()
            )
          ],
        ),
@@ -441,7 +345,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: CClass.bGColorTheme(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -451,15 +355,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return ProfileScreen(profileId: FirebaseAuth.instance.currentUser!.uid,);
                 }));
               },
-              icon: const Icon(Icons.check, color: buttonColor2,))
+              icon: Icon(Icons.check, color: CClass.bTColor2Theme(),))
         ],
         elevation: 0.0,
-        backgroundColor: backgroundColor,
+        backgroundColor: CClass.bGColorTheme(),
       ),
       body: SingleChildScrollView(
         child: Container(
-        height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
+        height: MediaQuery.of(context).size.height * 1.2,
+        color: CClass.bGColorTheme(),
         child: LayoutBuilder(builder: (context, constraints){
           double innerHeight = constraints.maxHeight;
           return Stack(
@@ -479,7 +383,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           topLeft: Radius.circular(50),
                           topRight: Radius.circular(50)
                         ),
-                        color: secondaryBackgroundColor,
+                        color: CClass.secondaryBGColorTheme(),
                       ),
                     ),
                   ],
@@ -495,30 +399,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: CircleAvatar(
-                          backgroundColor: containerColor,
-                          radius: 65,
-                          backgroundImage: imageFile == null ? CachedNetworkImageProvider(widget.photoURL!):
-                          Image.file(imageFile!).image,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  radius: 25,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.edit,size: 25,),
-                                    onPressed: _showImageDialog,
+                        child: GestureDetector(
+                          onTap: (){
+                            showDialog(
+                                context: context,
+                                builder: (context){
+                                  return AlertDialog(
+                                    content: cachedNetworkImage(widget.photoURL),
+                                    scrollable: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  );
+                                }
+                            );
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: CClass.containerColor,
+                            radius: 65,
+                            backgroundImage: imageFile == null ? CachedNetworkImageProvider(widget.photoURL!):
+                            Image.file(imageFile!).image,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: CircleAvatar(
+                                    radius: 25,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.edit,size: 25,),
+                                      onPressed: _showImageDialog,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                      SizedBox(height: 50,),
-                     Divider(color: containerColor,),
+                     Divider(color: CClass.containerColor,),
                       textField()
                     ],
                   ),

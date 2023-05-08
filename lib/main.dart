@@ -7,11 +7,13 @@ import 'package:swift_learn/screens/authenticate/login_screen.dart';
 import 'package:swift_learn/screens/home/home_screen.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:swift_learn/services/auth_methods.dart';
-import 'package:swift_learn/utils/colors.dart';
+import 'package:swift_learn/services/shared_pref_method.dart';
+import 'package:swift_learn/utils/color.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await SharePrefClass.init();
   FirebaseFirestore.instance.settings;
   runApp(const MyApp());
 }
@@ -25,8 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'SwiftLearn',
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: backgroundColor,
-      ),
+          scaffoldBackgroundColor: CClass.bGColorTheme()),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),

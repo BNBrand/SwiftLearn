@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/Forum/forum_screen.dart';
 import 'package:swift_learn/screens/more/more.dart';
-import 'package:swift_learn/screens/search/notes_screen.dart';
-import '../../utils/colors.dart';
+import 'package:swift_learn/screens/notes/notes_screen.dart';
+import '../../utils/color.dart';
 import 'home.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const Home(),
     PostScreen(),
     const Text('Contacts'),
-    const NoteScreen(),
+    NoteScreen(),
     const MoreScreen()
   ];
 
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: pages[_page],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: secondaryBackgroundColor,
+        backgroundColor: CClass.secondaryBGColorTheme(),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         onTap: onPageChanged,

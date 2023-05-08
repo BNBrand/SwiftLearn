@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swift_learn/screens/home/home_screen.dart';
-import 'package:swift_learn/utils/colors.dart';
 
 import '../../services/auth_methods.dart';
+import '../../utils/color.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_button.dart';
 import 'landing_screen.dart';
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (context){
           return AlertDialog(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             title: const Text('Please choose an option'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -71,10 +71,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     _getImageFromCamera();
                   },
                   child: Row(
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.all(4.0),
-                        child: Icon(Icons.camera, color: textColor1,),
+                        child: Icon(Icons.camera, color: CClass.textColorTheme(),),
                       ),
                       Text('Camera')
                     ],
@@ -114,16 +114,16 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 10.0,),
           TextFormField(
             controller: emailController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 hintText: 'Enter Email',
                 filled: true,
-                fillColor: backgroundColor2,
+                fillColor: CClass.bGColor2Theme(),
                 enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryBackgroundColor)
+                    borderSide: BorderSide(color: CClass.secondaryBGColorTheme())
                 ),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: buttonColor2
+                        color: CClass.bTColor2Theme()
                     )
                 )
             ),
@@ -148,15 +148,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                     icon: Icon(Icons.remove_red_eye,
-                      color: showPass ? buttonColor2 : textColor2,)
+                      color: showPass ? CClass.bTColor2Theme() : CClass.textColor2,)
                 ),
-                fillColor: backgroundColor2,
+                fillColor: CClass.bGColor2Theme(),
                 enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryBackgroundColor)
+                    borderSide: BorderSide(color: CClass.secondaryBGColorTheme())
                 ),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: buttonColor2
+                        color: CClass.bTColor2Theme()
                     )
                 )
             ),
@@ -167,8 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(),
               TextButton(
                   onPressed: (){},
-                  child: const Text('Forgot Password',
-                    style: TextStyle(color: buttonColor2),
+                  child: Text('Forgot Password',
+                    style: TextStyle(color: CClass.bTColor2Theme()),
                   )
               )
             ],
@@ -186,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 }));
               }
             },
-            color: buttonColor,
+            color: CClass.bTColorTheme(),
             image: 'assets/images/email.png',
-            borderColor: backgroundColor2,
+            borderColor: CClass.bGColor2Theme(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text('Sign Up',
                   style: TextStyle(
                     fontSize: 18,
-                    color: buttonColor2
+                    color: CClass.bTColor2Theme()
                   ),
                   )
               )
@@ -223,12 +223,12 @@ class _LoginScreenState extends State<LoginScreen> {
           GestureDetector(
             onTap: _showImageDialog,
             child: CircleAvatar(
-              backgroundColor: backgroundColor2,
+              backgroundColor: CClass.bGColor2Theme(),
               radius: 60,
               backgroundImage: imageFile == null ? const AssetImage('assets/images/user.jpg')
               :
               Image.file(imageFile!).image,
-              child: imageFile == null ? Icon(Icons.camera_alt,color: backgroundColor2,size: 60,)
+              child: imageFile == null ? Icon(Icons.camera_alt,color: CClass.bGColor2Theme(),size: 60,)
                   :
                   SizedBox()
             ),
@@ -236,16 +236,16 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 10,),
           TextFormField(
             controller: nameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Enter Name',
               filled: true,
-              fillColor: backgroundColor2,
+              fillColor: CClass.bGColor2Theme(),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: secondaryBackgroundColor)
+                borderSide: BorderSide(color: CClass.secondaryBGColorTheme())
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: buttonColor2
+                  color: CClass.bTColor2Theme()
                 )
               )
             ),
@@ -253,16 +253,16 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 10.0,),
           TextFormField(
             controller: emailController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 hintText: 'Enter Email',
                 filled: true,
-                fillColor: backgroundColor2,
+                fillColor: CClass.bGColor2Theme(),
                 enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryBackgroundColor)
+                    borderSide: BorderSide(color: CClass.secondaryBGColorTheme())
                 ),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: buttonColor2
+                        color: CClass.bTColor2Theme()
                     )
                 )
             ),
@@ -287,15 +287,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                   icon: Icon(Icons.remove_red_eye,
-                    color: showPass ? buttonColor2 : textColor2,)
+                    color: showPass ? CClass.bTColor2Theme() : CClass.textColor2,)
                 ),
-                fillColor: backgroundColor2,
+                fillColor: CClass.bGColor2Theme(),
                 enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryBackgroundColor)
+                    borderSide: BorderSide(color: CClass.secondaryBGColorTheme())
                 ),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: buttonColor2
+                        color: CClass.bTColor2Theme()
                     )
                 )
             ),
@@ -341,9 +341,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 showSnackBar(context, "You must enter a name,email,password and profile photo");
               }
             },
-            color: buttonColor,
+            color: CClass.bTColorTheme(),
             image: 'assets/images/email.png',
-            borderColor: backgroundColor2,
+            borderColor: CClass.bGColor2Theme(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -355,10 +355,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       firstpage = true;
                     });
                   },
-                  child: const Text('Login',
+                  child: Text('Login',
                   style: TextStyle(
                     fontSize: 18,
-                    color: buttonColor2
+                    color: CClass.bTColor2Theme()
                   ),
                   )
               )
@@ -382,16 +382,16 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 20,),
               firstpage == true ? _buidLoginPage() : _buidSignUpPage(),
               Divider(
-                color: containerColor,
+                color: CClass.containerColor,
                 thickness: 3,
               ),
               CustomButton2(
                 text: 'Continue with Google',
                 onPressed: () async {
                    await _authMethods.signInWithGoogle(context);
-                }, color: textColor1,
+                }, color: CClass.textColorTheme(),
                 image: 'assets/images/google.png',
-                borderColor: buttonColor2,
+                borderColor: CClass.bTColor2Theme(),
               ),
             ],
           ),

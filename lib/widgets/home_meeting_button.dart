@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/colors.dart';
+import '../utils/color.dart';
 
 class HomeMeetingButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -21,7 +21,7 @@ class HomeMeetingButton extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: buttonColor,
+              color: CClass.bTColorTheme(),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(

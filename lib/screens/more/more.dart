@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import '../../services/auth_methods.dart';
 import 'package:swift_learn/screens/authenticate/login_screen.dart';
-import '../../utils/colors.dart';
+import '../../utils/color.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _MoreScreenState extends State<MoreScreen> {
         context: context,
         builder: (context){
           return AlertDialog(
-              backgroundColor: backgroundColor,
+              backgroundColor: CClass.bGColorTheme(),
               title: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: const Text('Do you want to logout?'),
@@ -37,11 +37,11 @@ class _MoreScreenState extends State<MoreScreen> {
                             return LoginScreen();
                           }));
                         },
-                        child: Text('Yes',style: TextStyle(color: textColor1),)),
+                        child: Text('Yes',style: TextStyle(color: CClass.textColorTheme()),)),
                     SizedBox(),
                     InkWell(
                         onTap: ()=> Navigator.pop(context),
-                        child: Text('No',style: TextStyle(color: textColor1),))
+                        child: Text('No',style: TextStyle(color: CClass.textColorTheme()),))
                   ],
                 ),
               )
@@ -78,7 +78,7 @@ class _MoreScreenState extends State<MoreScreen> {
               }
             },
             child: Card(
-              color: containerColor,
+              color: CClass.containerColor,
               child: ListTile(
                 leading: Icon(icons[index]),
                 title: Text(title[index]),

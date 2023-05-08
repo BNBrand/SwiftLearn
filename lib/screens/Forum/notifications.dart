@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swift_learn/utils/colors.dart';
+
+import '../../utils/color.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({Key? key}) : super(key: key);
@@ -28,14 +29,14 @@ class _NotificationsState extends State<Notifications> {
         elevation: 0.0,
         centerTitle: true,
         title: Text('Notifications'),
-        backgroundColor: backgroundColor2,
+        backgroundColor: CClass.bGColor2Theme(),
       ),
       body: Container(
         child: FutureBuilder(
           future: null,
           builder: (context, snapshot) {
             if(!snapshot.hasData){
-              return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+              return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
             }
             return Text(' ');
           }

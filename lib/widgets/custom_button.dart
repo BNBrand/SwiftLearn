@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/colors.dart';
+import '../utils/color.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -31,7 +31,7 @@ class CustomButton extends StatelessWidget {
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
-            side: const BorderSide(color: buttonColor),
+            side:  BorderSide(color: CClass.bTColorTheme()),
           ),
         ),
         child: Row(
@@ -92,9 +92,9 @@ class CustomButton2 extends StatelessWidget {
             SizedBox(width: 3,),
             Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 17,
-                  color: backgroundColor2
+                  color: CClass.bGColor2Theme()
               ),
             ),
           ],

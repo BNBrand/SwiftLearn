@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:swift_learn/utils/colors.dart';
 
+import '../../utils/color.dart';
 import '../../widgets/loading_image.dart';
 
 class ImageView extends StatefulWidget {
@@ -19,7 +19,7 @@ class _ImageViewState extends State<ImageView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: backgroundColor2,
+        backgroundColor: CClass.bGColor2Theme(),
       ),
       body: Center(
         child: SingleChildScrollView(

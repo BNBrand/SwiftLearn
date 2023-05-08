@@ -9,7 +9,18 @@ class PostTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){},
+      onTap: (){
+        showDialog(
+            context: context,
+            builder: (context){
+              return AlertDialog(
+                content: cachedNetworkImage(post.postImage),
+                scrollable: true,
+                contentPadding: EdgeInsets.zero,
+              );
+            }
+        );
+      },
       child: cachedNetworkImage(post.postImage),
     );
   }

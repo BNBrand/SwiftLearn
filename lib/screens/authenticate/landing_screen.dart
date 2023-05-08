@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:swift_learn/widgets/custum_textField.dart';
 
-import '../../utils/colors.dart';
+import '../../utils/color.dart';
 import '../../widgets/custom_button.dart';
 import '../home/home_screen.dart';
 
@@ -37,7 +38,6 @@ class _LandingScreenState extends State<LandingScreen> {
       degreeController.text.trim().length > 50 ? _degreeValue = false : _degreeValue = true;
     });
   }
-
   handleDetails() async{
     await valideField();
     if(_bioValue && _levelValue && _schoolValue && _departmentValue && _degreeValue){
@@ -61,86 +61,31 @@ class _LandingScreenState extends State<LandingScreen> {
     return Column(
       children: [
         SizedBox(height: 10.0,),
-        TextField(
+        CustumTextField(
           controller: levelController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: levelController.clear,
-              ),
-              labelText: 'Educational Level',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
+          labelText: 'Educational Level',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: schoolController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _schoolValue ? null : 'School must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: schoolController.clear,
-              ),
-              labelText: 'School',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _schoolValue ? null : 'School must be less than 50 characters',
+          labelText: 'School',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: departmentController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _departmentValue ? null : 'Department must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: departmentController.clear,
-              ),
-              labelText: 'Department',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _departmentValue ? null : 'Department must be less than 50 characters',
+          labelText: 'Department',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
-          controller: degreeController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _degreeValue ? null : 'Degree program must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: degreeController.clear,
-              ),
-              labelText: 'Degree Program',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+        CustumTextField(
+            controller: degreeController,
+            errorText: _degreeValue ? null : 'Degree program must be less than 50 characters',
+            labelText: 'Degree Program',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
-          controller: bioController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _bioValue ? null : 'Bio must be less than 100 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, color: textColor2,),
-                onPressed: bioController.clear,
-              ),
-              labelText: 'Interests /About Yourself (Optional)',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+        CustumTextField(
+            controller: bioController,
+            errorText: _bioValue ? null : 'Bio must be less than 100 characters',
+            labelText: 'Interests /About Yourself'
         ),
-        const Divider(color: containerColor, thickness: 2,),
       ],
     );
   }
@@ -149,70 +94,26 @@ class _LandingScreenState extends State<LandingScreen> {
     return Column(
       children: [
         SizedBox(height: 10.0,),
-        TextField(
+        CustumTextField(
           controller: levelController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _levelValue ? null : 'Level taught must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: levelController.clear,
-              ),
-              labelText: 'Level Taught',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _levelValue ? null : 'Educational level must be less than 50 characters',
+          labelText: 'Level Taught',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: schoolController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _schoolValue ? null : 'School must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: schoolController.clear,
-              ),
-              labelText: 'School',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _schoolValue ? null : 'School must be less than 50 characters',
+          labelText: 'School',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
+        CustumTextField(
           controller: departmentController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _departmentValue ? null : 'Department must be less than 50 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear,color: textColor2,),
-                onPressed: departmentController.clear,
-              ),
-              labelText: 'Department',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+          errorText: _departmentValue ? null : 'Department must be less than 50 characters',
+          labelText: 'Department',
         ),
-        const Divider(color: containerColor, thickness: 2,),
-        TextField(
-          controller: bioController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              errorText: _bioValue ? null : 'Bio must be less than 100 characters',
-              errorStyle: TextStyle(color: Colors.red),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, color: textColor2,),
-                onPressed: bioController.clear,
-              ),
-              labelText: 'Interests /About Yourself (Optional)',
-              labelStyle: TextStyle(color: textColor2)
-          ),
+        CustumTextField(
+            controller: bioController,
+            errorText: _bioValue ? null : 'Bio must be less than 100 characters',
+            labelText: 'Interests /About Yourself'
         ),
-        const Divider(color: containerColor, thickness: 2,),
       ],
     );
   }
@@ -221,6 +122,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CClass.bGColorTheme(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -230,11 +132,11 @@ class _LandingScreenState extends State<LandingScreen> {
                   return HomeScreen();
                 }));
               },
-              child: const Text('Skip',style: TextStyle(color: buttonColor2,fontSize: 16),)
+              child: Text('Skip',style: TextStyle(color: CClass.bTColor2Theme(),fontSize: 16),)
           )
         ],
         elevation: 0.0,
-        backgroundColor: backgroundColor,
+        backgroundColor: CClass.bGColorTheme(),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -252,7 +154,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 fontSize: 18,
             ),
             ),
-            const Divider(color: containerColor,),
+             Divider(color: CClass.containerColor,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -261,7 +163,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     horizontal:MediaQuery.of(context).size.width * 0.1,
                     vertical: 5.0
                   ),
-                  color: isStudent? containerColor : backgroundColor,
+                  color: isStudent? CClass.containerColor : CClass.bGColorTheme(),
                   child: TextButton(
                       onPressed: (){
                         setState(() {
@@ -271,7 +173,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       child: Text('Student',
                       style: TextStyle(
                         fontSize: isStudent ? 18 : 14,
-                        color: isStudent ? buttonColor2 : buttonColor
+                        color: isStudent ? CClass.bTColor2Theme() : CClass.bTColorTheme()
                       ),
                       )
                   ),
@@ -281,7 +183,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       horizontal:MediaQuery.of(context).size.width * 0.1,
                       vertical: 5.0
                   ),
-                  color: isStudent? backgroundColor : containerColor,
+                  color: isStudent? CClass.bGColorTheme() : CClass.containerColor,
                   child: TextButton(
                       onPressed: (){
                         setState(() {
@@ -291,7 +193,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       child: Text('Teacher',
                         style: TextStyle(
                             fontSize: isStudent ? 14 : 18,
-                            color: isStudent ? buttonColor : buttonColor2
+                            color: isStudent ? CClass.bTColorTheme() : CClass.bTColor2Theme()
                         ),)
                   ),
                 )
@@ -301,9 +203,9 @@ class _LandingScreenState extends State<LandingScreen> {
             CustomButton(
               text: 'Done',
               onPressed: handleDetails,
-              color: buttonColor,
+              color: CClass.bTColor2Theme(),
               icon: Icons.check,
-              textColor: textColor1,
+              textColor: CClass.textColorTheme(),
 
             )
           ],

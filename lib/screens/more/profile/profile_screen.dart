@@ -7,7 +7,8 @@ import 'package:swift_learn/screens/more/profile/edit_profile.dart';
 import 'package:swift_learn/widgets/post_tile.dart';
 
 import '../../../models/user_model.dart';
-import '../../../utils/colors.dart';
+import '../../../utils/color.dart';
+import '../../../widgets/loading_image.dart';
 
 class ProfileScreen extends StatefulWidget {
 
@@ -30,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   gridViewPost(){
     seclectGrid = true;
     if(isLoading){
-      return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+      return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
     }
     List<GridTile> gridTiles = [];
     posts.forEach((post) {
@@ -61,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             icon: Icon(Icons.grid_on,
             size: seclectGrid ? 25 : 18,
-            color: seclectGrid ? textColor1 : textColor2,
+            color: seclectGrid ? CClass.textColorTheme() : CClass.textColor2,
             )
         ),
         IconButton(
@@ -72,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             icon: Icon(Icons.list,
             size: seclectGrid ? 18 : 25,
-            color: seclectGrid ? textColor2 : textColor1,
+            color: seclectGrid ? CClass.textColor2 : CClass.textColorTheme(),
             )
         )
       ],
@@ -98,15 +99,15 @@ return FutureBuilder(
     builder: (context, snapshot) {
 
       if (!snapshot.hasData) {
-        return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+        return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
       }
       Users user = Users.fromDocument(snapshot.data!);
   return SingleChildScrollView(
     child: Column(
       children: [
         Container(
-          height: 550,
-          color: backgroundColor,
+          height: 700,
+          color: CClass.bGColorTheme(),
           child: LayoutBuilder(builder: (context, constraints){
             double innerHeight = constraints.maxHeight;
             return Stack(
@@ -120,10 +121,10 @@ return FutureBuilder(
                     children: [
                       Container(height: 70,),
                       Container(
-                        height: innerHeight * 0.85,
+                        height: innerHeight * 0.88,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          color: secondaryBackgroundColor,
+                          color: CClass.secondaryBGColorTheme(),
                         ),
                       ),
                     ],
@@ -147,16 +148,30 @@ return FutureBuilder(
                                   Container(height: 70,),
                                   Row(
                                     children: [
-                                      Icon(Icons.star,color: starColor,),
-                                      Text('${user.totalStars.toString()} Stars',style: TextStyle(color: textColor1),),
+                                      Icon(Icons.star,color: CClass.starColor,),
+                                      Text('${user.totalStars.toString()} Stars',style: TextStyle(color: CClass.textColorTheme()),),
                                     ],
                                   ),
                                 ],
                               ),
-                              CircleAvatar(
-                                backgroundColor: containerColor,
-                                radius: 65,
-                                backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                              GestureDetector(
+                                onTap: (){
+                                  showDialog(
+                                      context: context,
+                                      builder: (context){
+                                        return AlertDialog(
+                                          content: cachedNetworkImage(user.photoURL),
+                                          scrollable: true,
+                                          contentPadding: EdgeInsets.zero,
+                                        );
+                                      }
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor: CClass.containerColor,
+                                  radius: 65,
+                                  backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                                ),
                               ),
                               widget.profileId == FirebaseAuth.instance.currentUser!.uid ?
                               GestureDetector(
@@ -180,9 +195,9 @@ return FutureBuilder(
                                   children: [
                                     Container(height: 70,),
                                     Row(
-                                      children: const [
-                                        Icon(Icons.edit,color: buttonColor2,),
-                                        Text('Edit Profile',style: TextStyle(color: buttonColor2),)
+                                      children: [
+                                        Icon(Icons.edit,color: CClass.bTColor2Theme(),),
+                                        Text('Edit Profile',style: TextStyle(color: CClass.bTColor2Theme()),)
                                       ],
                                     ),
                                   ],
@@ -195,9 +210,9 @@ return FutureBuilder(
                                     children: [
                                       Container(height: 70,),
                                       Row(
-                                        children: const [
-                                          Icon(Icons.add,color: buttonColor2,),
-                                          Text('Follow',style: TextStyle(color: buttonColor2),)
+                                        children: [
+                                          Icon(Icons.add,color: CClass.bTColor2Theme(),),
+                                          Text('Follow',style: TextStyle(color: CClass.bTColor2Theme()),)
                                         ],
                                       ),
                                     ],
@@ -213,14 +228,11 @@ return FutureBuilder(
                               Text(user.displayName,
                                 style: const TextStyle(fontSize: 30),
                               ),
-                              Text(user.email,style: TextStyle(color: textColor2),),
+                              Text(user.email,style: TextStyle(color: CClass.textColor2,),)
                             ],
                           ),
                         ),
-                        const Divider(
-                          thickness: 2,
-                          color: containerColor,
-                        ),
+                         Divider(thickness: 2, color: CClass.containerColor,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           mainAxisSize: MainAxisSize.max,
@@ -229,53 +241,60 @@ return FutureBuilder(
                             Container(
                               height: 50,
                               width: 5,
-                              color: containerColor,
+                              color: CClass.containerColor,
                             ),
                             countColumn('Followers', 0),
                             Container(
                               height: 50,
                               width: 5,
-                              color: containerColor,
+                              color: CClass.containerColor,
                             ),
                             countColumn('Following', 0),
                           ],
                         ),
+                        Divider(color: CClass.containerColor,),
                          SizedBox(height: 20,),
-                         Padding(
-                           padding: const EdgeInsets.symmetric(vertical: 5.0),
-                           child: Container(
+                         ListTile(
+                           title: user.school != '' ? Text('Occupation/School : ') : Text('Ocupation : '),
+                           subtitle: Container(
                              padding: const EdgeInsets.all(12),
-                            color: backgroundColor2,
-                            child: user.school != '' ?
-                            Text('${user.occupation} at ${user.school}')
-                                :
+                             color: CClass.bGColor2Theme(),
+                             child: user.school != '' ?
+                             Text('${user.occupation} at ${user.school}')
+                                 :
                              Text(user.occupation),
-                        ),
+                           ),
                          ),
-                        user.level != '' ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: Container(
+                        Divider(color: CClass.containerColor,),
+                         ListTile(
+                          title: Text('Level : '),
+                          subtitle: Container(
                             padding: const EdgeInsets.all(12),
-                            color: backgroundColor2,
+                            color: CClass.bGColor2Theme(),
                             child: Text(user.level),
                           ),
-                        ) : const SizedBox(),
-                        user.degree != '' ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: Container(
+                        ),
+                         Divider(color: CClass.containerColor,),
+                         ListTile(
+                          title: Text('Degree/Department : '),
+                          subtitle: Container(
                             padding: const EdgeInsets.all(12),
-                            color: backgroundColor2,
-                            child: Text('Aiming for ${user.degree} in the department of ${user.department}'),
+                            color: CClass.bGColor2Theme(),
+                            child:user.degree != '' && user.department != ''? Text('Aiming for ${user.degree} in the department of ${user.department}')
+                            :user.degree != '' && user.department == ''? Text('Aiming for ${user.degree}')
+                            :user.degree == '' && user.department != ''? Text('Department of ${user.department}') : SizedBox(),
                           ),
-                        ) : const SizedBox(),
-                        user.bio != '' ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: Container(
+                        ),
+                         Divider(color: CClass.containerColor,),
+                         ListTile(
+                          title: Text('Interests/Bio : '),
+                          subtitle: Container(
                             padding: const EdgeInsets.all(12),
-                            color: backgroundColor2,
-                            child: Text('Interests : ${user.bio}'),
+                            color: CClass.bGColor2Theme(),
+                            child: Text('${user.bio}'),
                           ),
-                        ) : const SizedBox(),
+                        ),
+                        Divider(color: CClass.containerColor,),
                       ],
                     ),
                   ),
@@ -305,7 +324,7 @@ return FutureBuilder(
   listViewPost(){
     seclectGrid = false;
       if(isLoading) {
-        return const Center(child: CircularProgressIndicator(color: buttonColor2,));
+        return Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));
       }
       return Column(children: posts,);
   }
@@ -320,7 +339,7 @@ return FutureBuilder(
   Widget build(BuildContext context) {
     return Scaffold(
           appBar: AppBar(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             elevation: 0.0,
           ),
           body: ListView(
@@ -328,8 +347,8 @@ return FutureBuilder(
               profileHeader(),
               const SizedBox(height: 20.0,),
               Container(
-                decoration: const BoxDecoration(
-                    color: secondaryBackgroundColor,
+                decoration: BoxDecoration(
+                    color: CClass.secondaryBGColorTheme(),
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(50),
                         topLeft: Radius.circular(50)

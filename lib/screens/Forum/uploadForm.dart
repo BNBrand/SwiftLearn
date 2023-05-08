@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swift_learn/screens/Forum/forum_screen.dart';
-import 'package:swift_learn/utils/colors.dart';
 import 'package:swift_learn/utils/utils.dart';
 import 'package:swift_learn/widgets/custom_button.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../utils/color.dart';
 
 class UploadForm extends StatefulWidget {
 
@@ -78,7 +79,7 @@ class _UploadFormState extends State<UploadForm> {
         context: context,
         builder: (context){
           return AlertDialog(
-            backgroundColor: backgroundColor,
+            backgroundColor: CClass.bGColorTheme(),
             title: const Text('Please choose an option'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -88,10 +89,10 @@ class _UploadFormState extends State<UploadForm> {
                     _getImageFromCamera();
                     },
                   child: Row(
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.all(4.0),
-                        child: Icon(Icons.camera, color: textColor1,),
+                        child: Icon(Icons.camera, color: CClass.textColorTheme(),),
                       ),
                       Text('Camera')
                     ],
@@ -192,12 +193,12 @@ class _UploadFormState extends State<UploadForm> {
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
                         onPressed: captionController.clear,
-                        icon: const Icon(Icons.clear, color: textColor2,)
+                        icon: Icon(Icons.clear, color: CClass.textColor2,)
                     ),
                     border: InputBorder.none,
                     hintText: 'Write a caption...',
                     filled: true,
-                    fillColor: backgroundColor2,
+                    fillColor: CClass.bGColor2Theme(),
                   ),
                 ),
               ),
@@ -206,14 +207,14 @@ class _UploadFormState extends State<UploadForm> {
             CustomButton(
                 text: 'Post',
                 onPressed: isUploading ? null : handleSubmit,
-                color: buttonColor,
+                color: CClass.bTColorTheme(),
               icon: Icons.upload,
-              textColor: textColor1,
+              textColor: CClass.textColorTheme(),
             ),
             isUploading ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                CircularProgressIndicator(color: buttonColor,),
+              children: [
+                CircularProgressIndicator(color: CClass.bTColorTheme(),),
                 SizedBox(width: 5.0,),
                 Text('uploading...'),
               ],
@@ -223,8 +224,8 @@ class _UploadFormState extends State<UploadForm> {
                   return PostScreen();
                 }));
               },
-              icon: const Icon(Icons.cancel,color: textColor1,),
-              label: const Text('Cancel',style: TextStyle(color: textColor1),),
+              icon: Icon(Icons.cancel,color: CClass.textColorTheme(),),
+              label: Text('Cancel',style: TextStyle(color: CClass.textColorTheme()),),
             ),
           ],
         ),
@@ -246,15 +247,15 @@ class _UploadFormState extends State<UploadForm> {
                 decoration:  InputDecoration(
                   suffixIcon: IconButton(
                       onPressed: captionController.clear,
-                      icon: const Icon(Icons.clear, color: textColor2,)
+                      icon: Icon(Icons.clear, color: CClass.textColor2,)
                   ),
                   border: InputBorder.none,
                   hintText: 'Write a caption',
                   filled: true,
-                  fillColor: backgroundColor2,
-                  focusedBorder: const OutlineInputBorder(
+                  fillColor: CClass.bGColor2Theme(),
+                  focusedBorder:  OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: buttonColor
+                          color: CClass.bTColorTheme()
                       )
                   ),
                 ),
@@ -266,8 +267,8 @@ class _UploadFormState extends State<UploadForm> {
                 children: [
                   TextButton.icon(
                     onPressed: _showImageDialog,
-                    icon: const Icon(Icons.image,color: textColor1,),
-                    label: const Text('Add Image',style: TextStyle(color: textColor1),),
+                    icon: Icon(Icons.image,color: CClass.textColorTheme(),),
+                    label: Text('Add Image',style: TextStyle(color: CClass.textColorTheme()),),
                   ),
                   TextButton.icon(
                     onPressed: (){
@@ -275,8 +276,8 @@ class _UploadFormState extends State<UploadForm> {
                         return PostScreen();
                       }));
                     },
-                    icon: const Icon(Icons.cancel,color: textColor1,),
-                    label: const Text('Cancel',style: TextStyle(color: textColor1),),
+                    icon: Icon(Icons.cancel,color: CClass.textColorTheme(),),
+                    label: Text('Cancel',style: TextStyle(color: CClass.textColorTheme()),),
                   ),
                 ],
               ),
