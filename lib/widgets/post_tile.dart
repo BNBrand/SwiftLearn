@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:swift_learn/models/post_model.dart';
 import 'package:swift_learn/widgets/loading_image.dart';
 
@@ -13,10 +15,8 @@ class PostTile extends StatelessWidget {
         showDialog(
             context: context,
             builder: (context){
-              return AlertDialog(
-                content: cachedNetworkImage(post.postImage),
-                scrollable: true,
-                contentPadding: EdgeInsets.zero,
+              return PhotoView(
+                imageProvider: CachedNetworkImageProvider(post.postImage),
               );
             }
         );

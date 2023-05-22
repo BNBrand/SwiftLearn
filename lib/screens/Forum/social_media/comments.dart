@@ -63,17 +63,8 @@ class _CommentsState extends State<Comments> {
         {
           'comments': FieldValue.increment(1)
         });
-    await handleCommentFeed();
     commentId = const Uuid().v4();
     commentController.clear();
-  }
-  handleDeleteComment() async{
-    await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-        .collection('commentData').doc(commentId).delete();
-    await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
-        {
-          'comments': FieldValue.increment(-1)
-        });
   }
   handleEditComment() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
@@ -82,20 +73,7 @@ class _CommentsState extends State<Comments> {
           'comment': commentController.text.trim()
         });
   }
-  handleCommentFeed() async{
-    await FirebaseFirestore.instance.collection('feed').doc(widget.ownerId)
-        .collection('feedData').doc(widget.postId)
-        .set({
-      'type': 'comment',
-      'commentData': commentController.text.trim(),
-      'displayName': displayNameUser,
-      'photoURL': photoURLUser,
-      'uid': FirebaseAuth.instance.currentUser!.uid,
-      'postId': widget.postId,
-      'createdAt': Timestamp.now(),
-      'postImage': widget.postImage
-    });
-  }
+
 
   postComment(){
     return StreamBuilder(
@@ -203,110 +181,40 @@ class Comment extends StatefulWidget {
 
 class _CommentState extends State<Comment> {
 
-bool boolValue = false;
-  handleStar() async{
-    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .get().then((value) => {
-      if(value.data() != null){
-        if(value.data()!.keys.contains(widget.commentId)){
-          FirebaseFirestore.instance.runTransaction((Transaction tx) async{
-            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                .collection('commentData').doc(widget.commentId));
-            if(postSnapshot.exists){
-              await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .update({widget.commentId: false});
-
-              FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .get().then((value) => widget.data = value.data()!);
-
-              tx.update(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                  .collection('commentData').doc(widget.commentId), <String, dynamic>{
-                'commentStars': FieldValue.increment(-1)
-              });
-              tx.update(FirebaseFirestore.instance.collection('users').doc(widget.uid), <String, dynamic>{
-                'totalStars': FieldValue.increment(-1)
-              });
-              // handleUnStarCommentFeed();
-            }
-          }),
-        }else{
-          FirebaseFirestore.instance.runTransaction((tx) async{
-            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                .collection('commentData').doc(widget.commentId));
-            if(postSnapshot.exists){
-              await  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .update({widget.commentId: true});
-              setState((){
-                FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-                    .get().then((value) => widget.data = value.data()!);
-              });
-
-              tx.update(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                  .collection('commentData').doc(widget.commentId), <String, dynamic>{
-                'commentStars': FieldValue.increment(1)
-
-              });
-              tx.update(FirebaseFirestore.instance.collection('users').doc(widget.uid), <String, dynamic>{
-                'totalStars': FieldValue.increment(1)
-              });
-              // handleStarCommentFeed();
-            }
-          }),
-        }
-      }else{
-        FirebaseFirestore.instance.runTransaction((tx) async{
-          DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-              .collection('commentData').doc(widget.commentId));
-          if(postSnapshot.exists){
-            await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-                .set({widget.commentId: true});
-
-            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                .then((value) => widget.data = value.data()!);
-
-            tx.update(FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                .collection('commentData').doc(widget.commentId), <String, dynamic>{
-              'commentStars': FieldValue.increment(1)
-
-            });
-            tx.update(FirebaseFirestore.instance.collection('users').doc(widget.uid), <String, dynamic>{
-              'totalStars': FieldValue.increment(1)
-            });
-            // handleStarCommentFeed();
-          }
-        }),
-      }
-    });
-  }
-  Future _getData() async{
-    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .get().then((snapshot) async{
-      if(snapshot.exists){
-        setState(() {
-          boolValue = snapshot.data()![widget.commentId];
-        });
-      }
-    });
-  }
-
-void initState() {
-    _getData();
-  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid);
-  super.initState();
+deleteComment() async{
+  await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
+      .collection('commentData').doc(widget.commentId).delete();
+  await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
+      {
+        'comments': FieldValue.increment(-1)
+      });
+  await FirebaseFirestore.instance.collection('users').doc(widget.uid)
+      .update({'totalStars': FieldValue.increment(-widget.commentStars)});
 }
+handleStar() async{
+  await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('commentStars').doc(widget.commentId).set({});
+  await FirebaseFirestore.instance.collection('comments').doc(widget.postId).collection('commentData').doc(widget.commentId)
+      .update({'commentStars': FieldValue.increment(1)});
+  await FirebaseFirestore.instance.collection('users').doc(widget.uid)
+      .update({'totalStars': FieldValue.increment(1)});
+}
+handleDeleteStar() async{
+  DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('commentStars').doc(widget.commentId).get();
+  if(snapshot.exists){
+    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('commentStars').doc(widget.commentId).delete();
+    await FirebaseFirestore.instance.collection('comments').doc(widget.postId).collection('commentData').doc(widget.commentId)
+        .update({'commentStars': FieldValue.increment(-1)});
+    await FirebaseFirestore.instance.collection('users').doc(widget.uid)
+        .update({'totalStars': FieldValue.increment(-1)});
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    _getData();
     return Column(
       children: [
         ListTile(
@@ -324,22 +232,48 @@ void initState() {
           title: Text(widget.comment),
           subtitle: Text(timeago.format(widget.createdAt.toDate())),
           trailing: widget.uid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
-            onPressed: (){},
-            icon: Icon(Icons.more_vert),
+            onPressed: (){
+              setState(() {
+                deleteComment();
+              });
+            },
+            icon: Icon(Icons.delete,color: CClass.buttonColor2,),
           ):
           null,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TextButton.icon(
-                onPressed: (){
-                  setState(() {
-                    handleStar();
-                  });
-                },
-              icon : Icon(Icons.star,color: boolValue ? CClass.starColor : CClass.textColor2,),
-              label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+            StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection('commentStars').doc(widget.commentId).snapshots(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData){
+                    return TextButton.icon(
+                      onPressed: (){},
+                      icon : Icon(Icons.star,color: CClass.textColor2,),
+                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                    );
+                  }
+                  return snapshot.data!.exists ? TextButton.icon(
+                    onPressed: (){
+                      setState(() {
+                        handleDeleteStar();
+                      });
+                    },
+                    icon : Icon(Icons.star,color: CClass.starColor,),
+                    label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                  ):
+                  TextButton.icon(
+                    onPressed: (){
+                      setState(() {
+                        handleStar();
+                      });
+                    },
+                    icon : Icon(Icons.star,color: CClass.textColor2,),
+                    label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                  );
+                }
             ),
             TextButton.icon(
               onPressed: (){

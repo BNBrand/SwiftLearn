@@ -203,7 +203,7 @@ class _LandingScreenState extends State<LandingScreen> {
             CustomButton(
               text: 'Done',
               onPressed: handleDetails,
-              color: CClass.bTColor2Theme(),
+              color: CClass.buttonColor,
               icon: Icons.check,
               textColor: CClass.textColorTheme(),
 
