@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = false;
   int postCount = 0;
   int starCount = 0;
+  bool isDetails = false;
   List<Post> posts = [];
 
   gridViewPost(){
@@ -106,7 +107,7 @@ return FutureBuilder(
     child: Column(
       children: [
         Container(
-          height: 700,
+          height: isDetails ? 700 : 450,
           color: CClass.bGColorTheme(),
           child: LayoutBuilder(builder: (context, constraints){
             double innerHeight = constraints.maxHeight;
@@ -121,7 +122,7 @@ return FutureBuilder(
                     children: [
                       Container(height: 70,),
                       Container(
-                        height: innerHeight * 0.88,
+                        height: isDetails ? innerHeight * 0.9 : innerHeight * 0.85,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           color: CClass.secondaryBGColorTheme(),
@@ -254,47 +255,75 @@ return FutureBuilder(
                         ),
                         Divider(color: CClass.containerColor,),
                          SizedBox(height: 20,),
-                         ListTile(
-                           title: user.school != '' ? Text('Occupation/School : ') : Text('Ocupation : '),
-                           subtitle: Container(
-                             padding: const EdgeInsets.all(12),
-                             color: CClass.bGColor2Theme(),
-                             child: user.school != '' ?
-                             Text('${user.occupation} at ${user.school}')
-                                 :
-                             Text(user.occupation),
-                           ),
-                         ),
-                        Divider(color: CClass.containerColor,),
-                         ListTile(
-                          title: Text('Level : '),
-                          subtitle: Container(
-                            padding: const EdgeInsets.all(12),
-                            color: CClass.bGColor2Theme(),
-                            child: Text(user.level),
-                          ),
-                        ),
-                         Divider(color: CClass.containerColor,),
-                         ListTile(
-                          title: Text('Degree/Department : '),
-                          subtitle: Container(
-                            padding: const EdgeInsets.all(12),
-                            color: CClass.bGColor2Theme(),
-                            child:user.degree != '' && user.department != ''? Text('Aiming for ${user.degree} in the department of ${user.department}')
-                            :user.degree != '' && user.department == ''? Text('Aiming for ${user.degree}')
-                            :user.degree == '' && user.department != ''? Text('Department of ${user.department}') : SizedBox(),
-                          ),
-                        ),
-                         Divider(color: CClass.containerColor,),
-                         ListTile(
-                          title: Text('Interests/Bio : '),
-                          subtitle: Container(
-                            padding: const EdgeInsets.all(12),
-                            color: CClass.bGColor2Theme(),
-                            child: Text('${user.bio}'),
-                          ),
-                        ),
-                        Divider(color: CClass.containerColor,),
+                         isDetails == false ? TextButton.icon(
+                             onPressed: (){
+                               setState(() {
+                                 isDetails = true;
+                               });
+                             },
+                             icon: Icon(Icons.arrow_drop_down_circle_outlined,color: CClass.buttonColor2,),
+                             label: Text('Tab to see more about ${user.displayName}',
+                               style: TextStyle(fontSize: 16,color: CClass.buttonColor2),
+                               overflow: TextOverflow.ellipsis,
+                             )
+                         ):
+                         Column(
+                           children: [
+                             ListTile(
+                               title: user.school != '' ? Text('Occupation/School : ') : Text('Ocupation : '),
+                               subtitle: Container(
+                                 padding: const EdgeInsets.all(12),
+                                 color: CClass.bGColor2Theme(),
+                                 child: user.school != '' ?
+                                 Text('${user.occupation} at ${user.school}')
+                                     :
+                                 Text(user.occupation),
+                               ),
+                             ),
+                             Divider(color: CClass.containerColor,),
+                             ListTile(
+                               title: Text('Level : '),
+                               subtitle: Container(
+                                 padding: const EdgeInsets.all(12),
+                                 color: CClass.bGColor2Theme(),
+                                 child: Text(user.level),
+                               ),
+                             ),
+                             Divider(color: CClass.containerColor,),
+                             ListTile(
+                               title: Text('Degree/Department : '),
+                               subtitle: Container(
+                                 padding: const EdgeInsets.all(12),
+                                 color: CClass.bGColor2Theme(),
+                                 child:user.degree != '' && user.department != ''? Text('Aiming for ${user.degree} in the department of ${user.department}')
+                                     :user.degree != '' && user.department == ''? Text('Aiming for ${user.degree}')
+                                     :user.degree == '' && user.department != ''? Text('Department of ${user.department}') : SizedBox(),
+                               ),
+                             ),
+                             Divider(color: CClass.containerColor,),
+                             ListTile(
+                               title: Text('Interests/Bio : '),
+                               subtitle: Container(
+                                 padding: const EdgeInsets.all(12),
+                                 color: CClass.bGColor2Theme(),
+                                 child: Text('${user.bio}'),
+                               ),
+                             ),
+                             Divider(color: CClass.containerColor,),
+                             TextButton.icon(
+                                 onPressed: (){
+                                   setState(() {
+                                     isDetails = false;
+                                   });
+                                 },
+                                 icon: Icon(Icons.arrow_circle_up_outlined,color: CClass.buttonColor2,),
+                                 label: Text('Tap to close details',
+                                   style: TextStyle(fontSize: 16,color: CClass.buttonColor2),
+                                   overflow: TextOverflow.ellipsis,
+                                 )
+                             )
+                           ],
+                         )
                       ],
                     ),
                   ),

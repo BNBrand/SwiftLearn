@@ -22,14 +22,6 @@ class _NoteContentState extends State<NoteContent> {
   bool isEdit = true;
   String content = '';
   bool isDark = true;
-  late final _focusNode = FocusNode(onKey: _handlePressKey);
-
-  KeyEventResult _handlePressKey(FocusNode focusNode,RawKeyEvent event){
-    if(event.isKeyPressed(LogicalKeyboardKey.enter)){
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
 
   themeMode(theme) async{
     if(isDark){
@@ -62,7 +54,6 @@ class _NoteContentState extends State<NoteContent> {
         textInputAction: TextInputAction.newline,
         autofocus: true,
         autocorrect: true,
-        focusNode: _focusNode,
         controller: noteController,
         decoration: null,
         maxLines: null,
@@ -112,15 +103,15 @@ class _NoteContentState extends State<NoteContent> {
     _getData();
     setState(() {
       content == '' ? isEdit = true : isEdit = false;
+      isDark = SharePrefClass.getThemeNote() ?? true;
     });
-    isDark = SharePrefClass.getThemeNote()!;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: isDark ? CClass.backgroundColor : Colors.white70,
+      backgroundColor: isDark ? CClass.backgroundColor : Colors.white,
       appBar: AppBar(
         backgroundColor: CClass.backgroundColor2,
         elevation: 0.0,

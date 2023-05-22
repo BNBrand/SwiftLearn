@@ -108,6 +108,9 @@ class _NoteScreenState extends State<NoteScreen> {
            String title = snapshot.data!.docs[index]['courseTitle'];
            String createdAt = snapshot.data!.docs[index]['createdAt'];
            String titleID = snapshot.data!.docs[index]['titleId'];
+           _deleteNote() async{
+             await FirebaseFirestore.instance.collection('notes').doc(FirebaseAuth.instance.currentUser!.uid).collection('course').doc(titleID).delete();
+           }
            return Column(
              children: [
                GestureDetector(
@@ -115,15 +118,27 @@ class _NoteScreenState extends State<NoteScreen> {
                    return NoteCourse(title: title,
                      titleId: titleID,);
                  })),
-                 child: ListTile(
-                   title: Text(title,
-                     style: TextStyle(
-                       fontWeight: FontWeight.bold,
-                       fontSize: 20,
+                 child: Card(
+                   color: CClass.containerColor,
+                   shadowColor: CClass.buttonColor2,
+                   child: ListTile(
+                     leading: IconButton(
+                       onPressed: (){},
+                       icon: Icon(Icons.edit),
                      ),
-                     overflow: TextOverflow.ellipsis,
+                     title: Text(title,
+                       style: TextStyle(
+                         fontWeight: FontWeight.bold,
+                         fontSize: 20,
+                       ),
+                       overflow: TextOverflow.ellipsis,
+                     ),
+                     subtitle: Text(createdAt),
+                     trailing: IconButton(
+                       onPressed: _deleteNote,
+                       icon: Icon(Icons.delete),
+                     ),
                    ),
-                   subtitle: Text(createdAt),
                  ),
                ),
                Divider(color: CClass.containerColor,)

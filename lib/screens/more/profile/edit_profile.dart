@@ -135,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _updatePhotoURL() async{
     String imageName = DateTime.now().microsecondsSinceEpoch.toString();
-    fstorage.Reference reference = fstorage.FirebaseStorage.instance.ref().child('userimages').child(imageName);
+    fstorage.Reference reference = fstorage.FirebaseStorage.instance.ref().child('userImages').child(imageName);
     fstorage.UploadTask uploadTask = reference.putFile(File(imageFile!.path));
     fstorage.TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
     await taskSnapshot.ref.getDownloadURL().then((url) async{

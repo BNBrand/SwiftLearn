@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swift_learn/screens/Forum/reply_screen.dart';
+import 'package:swift_learn/screens/Forum/social_media/reply_screen.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:uuid/uuid.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../utils/color.dart';
+import '../../../utils/color.dart';
 
 class Comments extends StatefulWidget {
   final String postId;

@@ -105,7 +105,7 @@ class _NoteCourseState extends State<NoteCourse> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: showDialogBox,
-        child: Icon(Icons.add,color: CClass.textColorTheme(),),
+        child: Icon(Icons.note_add,color: CClass.textColorTheme(),),
         backgroundColor: CClass.bTColorTheme(),
       ),
       appBar: AppBar(
@@ -133,6 +133,11 @@ class _NoteCourseState extends State<NoteCourse> {
                   String topicTitle = snapshot.data!.docs[index]['topicTitle'];
                   String content = snapshot.data!.docs[index]['content'];
                   String topicID = snapshot.data!.docs[index]['topicId'];
+                  _deleteNote() async{
+                    await FirebaseFirestore.instance.collection('notes')
+                        .doc(FirebaseAuth.instance.currentUser!.uid).collection('course')
+                        .doc(widget.titleId).collection('topic').doc(topicID).delete();
+                  }
                 return GestureDetector(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context){
                     return NoteContent(
@@ -155,12 +160,16 @@ class _NoteCourseState extends State<NoteCourse> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(content,overflow: TextOverflow.ellipsis,),
+                      trailing: IconButton(
+                        onPressed: _deleteNote,
+                        icon: Icon(Icons.delete),
+                      ),
                     ),
                   ),
                 );
                 }
             ):
-            const Center(child: Text('Add a Course'));
+            const Center(child: Text('Add a Topic'));
           }
         ),
       ),

@@ -20,14 +20,14 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get(),
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return showSnackBar(context, 'There is an error');
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (!snapshot.hasData) {
             return const Loading();
           }
           Users user = Users.fromDocument(snapshot.data!);

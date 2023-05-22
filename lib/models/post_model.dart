@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/models/user_model.dart';
-import 'package:swift_learn/screens/Forum/comments.dart';
+import 'package:swift_learn/screens/Forum/social_media/comments.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../utils/color.dart';
@@ -117,6 +118,40 @@ class _PostState extends State<Post> {
       }
     });
   }
+  void _showImageDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+              backgroundColor: CClass.bGColorTheme(),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text('Delete post?',textAlign: TextAlign.center,),
+              ),
+              content: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                        onTap: (){
+                          setState(() {
+                            deletePost();
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Yes',style: TextStyle(color: CClass.textColorTheme()),)),
+                    SizedBox(),
+                    InkWell(
+                        onTap: ()=> Navigator.pop(context),
+                        child: Text('No',style: TextStyle(color: CClass.textColorTheme()),))
+                  ],
+                ),
+              )
+          );
+        }
+    );
+  }
   handleStarFeed() async{
     await FirebaseFirestore.instance.collection('feed').doc(ownerId)
         .collection('feedData').doc(postId)
@@ -224,13 +259,32 @@ class _PostState extends State<Post> {
             ),
             title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
             subtitle: Text(timeago.format(createdAt.toDate())),
-            trailing: IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: (){},
+            trailing: FirebaseAuth.instance.currentUser!.uid != ownerId ? null
+                : IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: _showImageDialog,
             ),
           );
         }
     );
+  }
+  deletePost() async{
+    try{
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+      await FirebaseStorage.instance.ref().child('postImages').child('post_$postId.jpg').delete();
+      DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get();
+      if(postSnapshot.exists){
+        await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({postId: FieldValue.delete()});
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(ownerId)
+          .update({'totalStars': FieldValue.increment(-currentStars)});
+      await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid).delete();
+    }catch(e){
+      print(e.toString());
+    }
   }
   buildCaption(){
     return Column(
@@ -252,6 +306,8 @@ class _PostState extends State<Post> {
                 content: cachedNetworkImage(postImage),
                 scrollable: true,
                 contentPadding: EdgeInsets.zero,
+                insetPadding: EdgeInsets.zero,
+                backgroundColor: CClass.containerColor,
               );
             }
         );

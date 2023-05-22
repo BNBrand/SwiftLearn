@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../utils/color.dart';
-import '../more/profile/profile_screen.dart';
+import '../../../utils/color.dart';
+import '../../more/profile/profile_screen.dart';
 
 class ReplyScreen extends StatefulWidget {
   final String comments;
