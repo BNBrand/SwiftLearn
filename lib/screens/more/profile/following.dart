@@ -36,21 +36,44 @@ class _FollowingScreenState extends State<FollowingScreen> {
                 String displayName = snapshot.data!.docs[index]['displayName'];
                 String photoURL = snapshot.data!.docs[index]['photoURL'];
                 String ownerId = snapshot.data!.docs[index]['ownerId'];
-                return ListTile(
-                  leading: GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                        return ProfileScreen(
-                          profileId: ownerId,
-                        );
-                      }));
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: CClass.containerColor,
-                      backgroundImage: CachedNetworkImageProvider(photoURL),
+                String displayNameUser = '';
+                String photoURLUser = '';
+                updateUserInfo()async{
+                  await FirebaseFirestore.instance.collection('users').doc(ownerId)
+                      .get().then((snapshot) async{
+                    if(snapshot.exists){
+                      setState(() {
+                        displayNameUser = snapshot.data()!['displayName'];
+                        photoURLUser = snapshot.data()!['photoURL'];
+                      });
+                    }
+                  });
+                  await FirebaseFirestore.instance.collection('following').doc(widget.profileId)
+                      .collection('userFollowing').doc(ownerId).update(
+                      {
+                        'displayName': displayNameUser,
+                        'photoURL': photoURLUser,
+                      });
+                }
+                updateUserInfo();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+                          return ProfileScreen(
+                            profileId: ownerId,
+                          );
+                        }));
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: CClass.containerColor,
+                        backgroundImage: CachedNetworkImageProvider(photoURL),
+                      ),
                     ),
+                    title: Text(displayName),
                   ),
-                  title: Text(displayName),
                 );
               },
             ):

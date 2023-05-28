@@ -135,6 +135,29 @@ class _AnswerScreenState extends State<AnswerScreen> {
                         String answerID = snapshot.data!.docs[index]['answerId'];
                         String ownerID = snapshot.data!.docs[index]['ownerId'];
                         String photoURL = snapshot.data!.docs[index]['photoURL'];
+                        String displayNameUser = '';
+                        String photoURLUser = '';
+                        Future getData() async{
+                          await FirebaseFirestore.instance.collection('users').doc(ownerID)
+                              .get().then((snapshot) async{
+                            if(snapshot.exists){
+                              setState(() {
+                                displayNameUser = snapshot.data()!['displayName'];
+                                photoURLUser = snapshot.data()!['photoURL'];
+                              });
+                            }
+                          });
+                        }
+                        updateUserInfo()async{
+                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
+                              .collection('answers').doc(answerID).update(
+                              {
+                                'displayName': displayNameUser,
+                                'photoURL': photoURLUser,
+                              });
+                        }
+                        getData();
+                        updateUserInfo();
                         deleteAnswer() async{
                           await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID).delete();
                           await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)

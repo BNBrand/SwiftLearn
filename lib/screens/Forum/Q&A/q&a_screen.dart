@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../../../models/user_model.dart';
 import '../../../utils/color.dart';
 import 'answer_screen.dart';
 
@@ -38,28 +37,41 @@ class _QAScreenState extends State<QAScreen> {
                   String questionID = snapshot.data!.docs[index]['questionId'];
                   int answers = snapshot.data!.docs[index]['answers'];
                   String ownerId = snapshot.data!.docs[index]['ownerId'];
+                  String displayName = snapshot.data!.docs[index]['displayName'];
+                  String photoURL = snapshot.data!.docs[index]['photoURL'];
+                  String displayNameUser = '';
+                  String photoURLUser = '';
+                  updateUserInfo()async{
+                    await FirebaseFirestore.instance.collection('users').doc(ownerId)
+                        .get().then((snapshot) async{
+                      if(snapshot.exists){
+                        setState(() {
+                          displayNameUser = snapshot.data()!['displayName'];
+                          photoURLUser = snapshot.data()!['photoURL'];
+                        });
+                      }
+                    });
+                    await FirebaseFirestore.instance.collection('questions').doc(questionID).update(
+                        {
+                          'displayName': displayNameUser,
+                          'photoURL': photoURLUser,
+                        });
+                  }
+                  updateUserInfo();
                   deleteQuestion() async{
                     await FirebaseFirestore.instance.collection('questions').doc(questionID).delete();
                   }
                   return Column(
                     children: [
-                      StreamBuilder(
-                          stream: FirebaseFirestore.instance.collection('users').doc(ownerId).snapshots(),
-                          builder: (context, snapshot) {
-
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator(color: CClass.bTColorTheme(),));
-                            }
-                            Users user = Users.fromDocument(snapshot.data!);
-                          return InkWell(
+                      InkWell(
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context){
                               return AnswerScreen(
                                   question: question,
                                   questionId: questionID,
                                   createdAt: createdAt,
                                   ownerId: ownerId,
-                                  ownerPhoto: user.photoURL,
-                                  ownerName: user.displayName,
+                                  ownerPhoto: photoURL,
+                                  ownerName: displayName,
                                   answers: answers,
                               );
                             })),
@@ -75,7 +87,7 @@ class _QAScreenState extends State<QAScreen> {
                                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                                       child: ListTile(
                                         leading: CircleAvatar(
-                                          backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                                          backgroundImage: CachedNetworkImageProvider(photoURL),
                                           backgroundColor: CClass.containerColor,
                                         ),
                                         title: Text(question,
@@ -83,7 +95,7 @@ class _QAScreenState extends State<QAScreen> {
                                         subtitle: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('By ${user.displayName}   - ${timeago.format(createdAt.toDate())} -'),
+                                            Text('By ${displayName}   - ${timeago.format(createdAt.toDate())} -'),
                                             TextButton.icon(
                                                 onPressed: (){},
                                                 icon: Icon(Icons.question_answer_outlined,color: Colors.green),
@@ -101,9 +113,7 @@ class _QAScreenState extends State<QAScreen> {
                                 ),
                               ),
                             ),
-                          );
-                        }
-                      ),
+                          ),
                       Divider(color: CClass.containerColor,)
                     ],
                   );

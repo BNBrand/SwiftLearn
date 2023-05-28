@@ -6,41 +6,40 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swift_learn/screens/Forum/Q&A/q&a_screen.dart';
+import 'package:swift_learn/screens/Forum/search_sceen.dart';
+import 'package:swift_learn/screens/Forum/social_media/post_screen.dart';
 import 'package:uuid/uuid.dart';
-import '../../models/post_model.dart';
-import '../../models/user_model.dart';
 import '../../utils/color.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_button.dart';
-import '../more/profile/profile_screen.dart';
 import 'social_media/comments.dart';
 
-class PostScreen extends StatefulWidget {
+class ForumScreen extends StatefulWidget {
 
   @override
-  State<PostScreen> createState() => _PostScreenState();
+  State<ForumScreen> createState() => _ForumScreenState();
 }
 
-class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateMixin {
+class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStateMixin {
 
   TextEditingController captionController = TextEditingController();
   TextEditingController searchController = TextEditingController();
+  TextEditingController questionController = TextEditingController();
   Future<QuerySnapshot>? searchResultFuture;
-  List<Post> post = [];
   PageController pageController = PageController();
   TabController? tabController;
   bool isLoading = false;
   File? imageFile;
   String? imageUrl;
   bool isUploading = false;
-  bool isPost = true;
   String postId = const Uuid().v4();
+  String questionId = const Uuid().v4();
   String? displayNameUser = '';
   String? email = '';
   String? photoURLUser = '';
   int selectedIndex = 0;
 
-  @override
   Future _getData() async{
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
         .get().then((snapshot) async{
@@ -117,17 +116,6 @@ class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateM
         }
     );
   }
-  postsContent() async{
-    setState(() {
-      isLoading = true;
-    });
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').orderBy('createdAt', descending: true).get();
-    setState(() {
-      isPost = true;
-      isLoading = false;
-      post = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-    });
-  }
   handleSubmit() async{
     setState(() {
       isUploading = true;
@@ -157,7 +145,6 @@ class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateM
         imageFile = null;
         isUploading = false;
         postId = const Uuid().v4();
-        postsContent();
       });
 
     }catch(e){
@@ -227,7 +214,7 @@ class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateM
             ) : TextButton.icon(
               onPressed: (){
                 setState(() {
-                  postsContent();
+                  imageFile = null;
                 });
               },
               icon: Icon(Icons.cancel,color: CClass.textColorTheme(),),
@@ -247,142 +234,121 @@ class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateM
       );
     }));
   }
-  qAContent(){
-    setState(() {
-      isPost = false;
-    });
-    return Text('Q&A');
-  }
-  searchContent(){
-    setState(() {
-      isPost = false;
-    });
-    return Column(
-      children: [
-        TextField(
-          controller: searchController,
-          onChanged: (val) {
-            setState(() {
-              searchController.text.isEmpty ? null :
-              handleSearch(val);
-            });
-          },
-          onSubmitted: handleSearch,
-          decoration: InputDecoration(
-              filled: true,
-              fillColor: CClass.bGColor2Theme(),
-              border: InputBorder.none,
-              hintText: 'Search',
-              prefixIcon: Icon(Icons.search, color: CClass.textColorTheme(),),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.clear, color: CClass.textColorTheme(),),
-                onPressed: (){
-                  setState(() {
-                    searchController.clear();
-                  });
-                },
-              )
-          ),
-        ),
-        searchController.text.isEmpty ?
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.search, size: 80, color: CClass.containerColor,),
-              Text('Search users')
-            ],
-          ),
-        ):
-        SingleChildScrollView(child: buildSearchResults(),)
-      ],
-    );
-  }
   quizContent(){
-    setState(() {
-      isPost = false;
-    });
     return Text('Quiz');
   }
-  handleSearch(String query){
-    Future<QuerySnapshot> users = FirebaseFirestore.instance.collection('users')
-        .where('displayName', isGreaterThanOrEqualTo: query).get();
-    setState(() {
-      searchResultFuture = users;
-    });
+  _handleQuestion()async{
+    if(questionController.text.isNotEmpty){
+      await FirebaseFirestore.instance.collection('questions').doc(questionId).set(
+          {
+            'question': questionController.text.trim(),
+            'questionId': questionId,
+            'ownerId': FirebaseAuth.instance.currentUser!.uid,
+            'createdAt': Timestamp.now(),
+            'photoURL': photoURLUser,
+            'displayName': displayNameUser,
+            'answers': 0,
+          });
+      questionController.clear();
+      questionId = const Uuid().v4();
+      Navigator.of(context).pop();
+    }else{
+      Navigator.of(context).pop();
+    }
   }
-  buildSearchResults(){
-    return FutureBuilder(
-        future: searchResultFuture,
-        builder: (context, snapshot) {
-
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator(color: CClass.buttonColor2,));
-          }
-          List<Padding> searchResults = [];
-          snapshot.data!.docs.forEach((doc) {
-            Users user = Users.fromDocument(doc);
-            searchResults.add(
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GestureDetector(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                      return ProfileScreen(profileId: user.uid);
-                    }));
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: CClass.secondaryBackgroundColor,
-                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
-                    ),
-                    title: Text(user.displayName, overflow: TextOverflow.ellipsis,),
-                    subtitle: Text(user.email, overflow: TextOverflow.ellipsis),
-                    trailing: user.uid != FirebaseAuth.instance.currentUser!.uid ? TextButton.icon(
-                      label: Text('Follow',style: TextStyle(color: CClass.buttonColor2),),
-                      icon: Icon(Icons.add,color: CClass.buttonColor2,),
-                      onPressed: (){},
-                    )
-                        :
-                    null,
+  _showQuestionSheet(BuildContext context){
+    return showModalBottomSheet(
+      backgroundColor: CClass.backgroundColor,
+        context: context,
+        builder: (BuildContext context){
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  autofocus: true,
+                  autocorrect: true,
+                  controller: questionController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    labelText: 'Enter Question',
+                    labelStyle: TextStyle(color: CClass.backgroundColor2),
+                    filled: true,
+                    fillColor: CClass.textColor1,
                   ),
+                  maxLines: 5,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      height: 1.5),
                 ),
               ),
-            );
-          });
-          return Column(
-              children: searchResults
-          );
+              CustomButton(
+                  text: 'Done',
+                  onPressed: (){
+                    setState(() {
+                      _handleQuestion();
+                    });
+                  },
+                  color: Colors.green,
+                  icon: Icons.check,
+                  textColor: CClass.textColor1
+              )
+            ],
+          ),
+        ],
+      );
         }
     );
   }
+
+  @override
   void initState() {
     tabController = TabController(length: 4, vsync: this);
-    postsContent();
     _getData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    postsContent();
+    tabController!.addListener(() {
+      selectedIndex = tabController!.index;
+    });
+    _getData();
     return imageFile != null ?  withImage() :
     Scaffold(
-      floatingActionButton: isPost ? FloatingActionButton(
+      floatingActionButton: selectedIndex == 0 ? FloatingActionButton(
+        onPressed: (){
+          _showQuestionSheet(context);
+        },
+        child: Icon(Icons.question_mark,color: CClass.textColor1,),
+        backgroundColor: Colors.green,
+      ):
+      selectedIndex == 1 ? FloatingActionButton(
         onPressed: _showImageDialog,
         child: Icon(Icons.upload,color: CClass.textColor1,),
         backgroundColor: CClass.buttonColor,
-      ) : null,
+      ):null,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: CClass.backgroundColor2,
         automaticallyImplyLeading: false,
         title: TabBar(
-          indicatorColor: CClass.buttonColor2,
+          indicatorColor: selectedIndex == 0 ? Colors.greenAccent
+              :selectedIndex == 1 ? CClass.buttonColor2
+              :selectedIndex == 2 ? Colors.redAccent
+              :selectedIndex == 3 ? CClass.textColor1 : null,
           controller: tabController,
-          tabs: [
-            Tab(text: 'Post',),
+          tabs: const [
             Tab(text: 'Q&A',),
+            Tab(text: 'Post',),
             Tab(text: 'Quiz',),
             Tab(text: 'Search',)
           ],
@@ -391,16 +357,10 @@ class _PostScreenState extends State<PostScreen> with SingleTickerProviderStateM
       body: TabBarView(
         controller: tabController,
         children: [
-          ListView(
-            children: [
-              Column(
-                children: post,
-              ),
-            ],
-          ),
-          qAContent(),
+          const QAScreen(),
+          const PostScreen(),
           quizContent(),
-          searchContent()
+          const SearchScreen()
         ],
       )
     );

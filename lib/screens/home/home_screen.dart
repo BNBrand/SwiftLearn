@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> pages = [
     Home(),
-    PostScreen(),
+    ForumScreen(),
     const Text('Contacts'),
     NoteScreen(),
     const MoreScreen()

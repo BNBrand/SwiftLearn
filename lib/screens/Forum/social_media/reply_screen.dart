@@ -11,8 +11,8 @@ import '../../more/profile/profile_screen.dart';
 class ReplyScreen extends StatefulWidget {
   final String comments;
   final String commenterUid;
-  final String commenterphotoURL;
-  final String commenterdisplayName;
+  final String commenterPhotoURL;
+  final String commenterDisplayName;
   final Timestamp createdAt;
   final int commentStars;
   final String postId;
@@ -21,8 +21,8 @@ class ReplyScreen extends StatefulWidget {
   ReplyScreen({
     required this.createdAt,
     required this.comments,
-    required this.commenterdisplayName,
-    required this.commenterphotoURL,
+    required this.commenterDisplayName,
+    required this.commenterPhotoURL,
     required this.commenterUid,
     required this.commentStars,
     required this.postId,
@@ -54,7 +54,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
 
   handleReply() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-        .collection('commentData').doc(widget.commentId).collection('repies').doc(replyId).set(
+        .collection('commentData').doc(widget.commentId).collection('replies').doc(replyId).set(
         {
           'reply' : replyController.text.trim(),
           'displayName' : displayNameUser,
@@ -75,7 +75,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
   handleDeleteReply() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
         .collection('commentData').doc(widget.commentId)
-        .collection('repies').doc(replyId).delete();
+        .collection('replies').doc(replyId).delete();
     await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
         {
           'comments': FieldValue.increment(-1)
@@ -84,7 +84,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
   handleEditReply() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
         .collection('commentData').doc(widget.commentId)
-        .collection('repies').doc(replyId).update(
+        .collection('replies').doc(replyId).update(
         {
           'reply': replyController.text.trim()
         });
@@ -130,7 +130,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
                   },
                   child: CircleAvatar(
                     backgroundColor: CClass.containerColor,
-                    backgroundImage: CachedNetworkImageProvider(widget.commenterphotoURL),
+                    backgroundImage: CachedNetworkImageProvider(widget.commenterPhotoURL),
                   ),
                 ),
                 title: Text(widget.comments),
@@ -152,7 +152,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
           Expanded(
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('comments').doc(widget.postId)
-                      .collection('commentData').doc(widget.commentId).collection('repies').orderBy('repliedAt', descending: false).snapshots(),
+                      .collection('commentData').doc(widget.commentId).collection('replies').orderBy('repliedAt', descending: false).snapshots(),
                 builder: (context, snapshot) {
                     if(!snapshot.hasData){
                       return  Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),));

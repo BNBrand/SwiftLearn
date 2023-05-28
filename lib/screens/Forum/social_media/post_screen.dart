@@ -8,7 +8,6 @@ import 'package:swift_learn/screens/Forum/social_media/comments.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../../models/user_model.dart';
 import '../../../utils/color.dart';
 
 class PostScreen extends StatefulWidget {
@@ -48,11 +47,32 @@ class _PostScreenState extends State<PostScreen> {
               itemBuilder: (context, int index){
                 Timestamp createdAt = snapshot.data!.docs[index]['createdAt'];
                 String postID = snapshot.data!.docs[index]['postId'];
+                String displayName = snapshot.data!.docs[index]['displayName'];
+                String photoURL = snapshot.data!.docs[index]['photoURL'];
                 int stars = snapshot.data!.docs[index]['stars'];
                 int comments = snapshot.data!.docs[index]['comments'];
                 String ownerID = snapshot.data!.docs[index]['ownerId'];
                 String caption = snapshot.data!.docs[index]['caption'];
                 String postImage = snapshot.data!.docs[index]['postImage'];
+                String displayNameUser = '';
+                String photoURLUser = '';
+                updateUserInfo()async{
+                  await FirebaseFirestore.instance.collection('users').doc(ownerID)
+                      .get().then((snapshot) async{
+                    if(snapshot.exists){
+                      setState(() {
+                        displayNameUser = snapshot.data()!['displayName'];
+                        photoURLUser = snapshot.data()!['photoURL'];
+                      });
+                    }
+                  });
+                  await FirebaseFirestore.instance.collection('posts').doc(postID).update(
+                      {
+                        'displayName': displayNameUser,
+                        'photoURL': photoURLUser,
+                      });
+                }
+                updateUserInfo();
                 deletePost() async{
                   try{
                     await FirebaseFirestore.instance.collection('posts').doc(postID).delete();
@@ -131,15 +151,7 @@ class _PostScreenState extends State<PostScreen> {
                   children: [
                     Column(
                       children: [
-                        StreamBuilder(
-                            stream: FirebaseFirestore.instance.collection('users').doc(ownerID).snapshots(),
-                            builder: (context, snapshot) {
-
-                              if (!snapshot.hasData) {
-                                return Center(child: CircularProgressIndicator(color: CClass.bTColorTheme(),));
-                              }
-                              Users user = Users.fromDocument(snapshot.data!);
-                            return ListTile(
+                        ListTile(
                               leading: GestureDetector(
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context){
@@ -147,19 +159,17 @@ class _PostScreenState extends State<PostScreen> {
                                   }));
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                                  backgroundImage: CachedNetworkImageProvider(photoURL),
                                 ),
                               ),
-                              title: Text(user.displayName,overflow: TextOverflow.ellipsis,),
+                              title: Text(displayName,overflow: TextOverflow.ellipsis,),
                               subtitle: Text(timeago.format(createdAt.toDate())),
                               trailing: FirebaseAuth.instance.currentUser!.uid != ownerID ? null
                                   : IconButton(
                                 icon: Icon(Icons.delete,color: CClass.buttonColor2,),
                                 onPressed: showDeleteDialog,
                               ),
-                            );
-                          }
-                        ),
+                            ),
                         Text(caption),
                       ],
                     ),

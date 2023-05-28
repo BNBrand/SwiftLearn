@@ -281,8 +281,8 @@ handleDeleteStar() async{
                   return ReplyScreen(
                       createdAt: widget.createdAt,
                       comments: widget.comment,
-                      commenterdisplayName: widget.displayName,
-                      commenterphotoURL: widget.photoURL,
+                      commenterDisplayName: widget.displayName,
+                      commenterPhotoURL: widget.photoURL,
                       commenterUid: widget.uid,
                       commentStars: widget.commentStars,
                       postId: widget.postId,
