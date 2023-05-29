@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/more/profile/profile_screen.dart';
 import 'package:swift_learn/utils/color.dart';
+import '../../../models/user_model.dart';
 
 class FollowersScreen extends StatefulWidget {
   String profileId;
@@ -33,47 +34,42 @@ class _FollowersScreenState extends State<FollowersScreen> {
           return snapshot.data!.docs.isNotEmpty ? ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index){
-              String displayName = snapshot.data!.docs[index]['displayName'];
-              String photoURL = snapshot.data!.docs[index]['photoURL'];
               String ownerId = snapshot.data!.docs[index]['ownerId'];
-              String displayNameUser = '';
-              String photoURLUser = '';
-              updateUserInfo()async{
-                await FirebaseFirestore.instance.collection('users').doc(ownerId)
-                    .get().then((snapshot) async{
-                  if(snapshot.exists){
-                    setState(() {
-                      displayNameUser = snapshot.data()!['displayName'];
-                      photoURLUser = snapshot.data()!['photoURL'];
-                    });
-                  }
-                });
-                await FirebaseFirestore.instance.collection('followers').doc(widget.profileId)
-                    .collection('userFollowers').doc(ownerId).update(
-                    {
-                      'displayName': displayNameUser,
-                      'photoURL': photoURLUser,
-                    });
-              }
-              updateUserInfo();
+              String followedAt = snapshot.data!.docs[index]['followedAt'];
+
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: ListTile(
-                      leading: GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                            return ProfileScreen(
-                              profileId: ownerId,
-                            );
-                          }));
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: CClass.containerColor,
-                          backgroundImage: CachedNetworkImageProvider(photoURL),
-                        ),
-                      ),
-                      title: Text(displayName),
-                    ),
+                child: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('users').doc(ownerId).snapshots(),
+                    builder: (context, snapshot) {
+
+                      if (!snapshot.hasData) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Center(child: CircularProgressIndicator(color: CClass.bTColorTheme(),)),
+                        );
+                      }
+                      Users user = Users.fromDocument(snapshot.data!);
+                    return ListTile(
+                          leading: GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+                                return ProfileScreen(
+                                  profileId: ownerId,
+                                );
+                              }));
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: CClass.containerColor,
+                              backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                            ),
+                          ),
+                          title: Text(user.displayName),
+                      subtitle: Text('From $followedAt'),
+                      trailing: Text(user.occupation),
+                        );
+                  }
+                ),
               );
             },
           ):

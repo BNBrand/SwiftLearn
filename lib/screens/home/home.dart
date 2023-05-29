@@ -40,6 +40,7 @@ class _HomeState extends State<Home> {
           drawer: Drawer(
             backgroundColor: CClass.bGColorTheme(),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 UserAccountsDrawerHeader(
                   decoration: BoxDecoration(
@@ -56,6 +57,17 @@ class _HomeState extends State<Home> {
                   accountName: Text(user.displayName,style: TextStyle(color: CClass.textColorTheme()),),
                   accountEmail: Text(user.email,style: TextStyle(color: CClass.textColorTheme())),
                 ),
+                GestureDetector(
+                  onTap: (){
+                    showAboutDialog(
+                        context: context,
+                      applicationName: 'SwiftLearn',
+                      applicationVersion: '1.0.0',
+                      applicationLegalese: 'BNBrand Copyright @ 2023'
+                    );
+                  },
+                    child: Text('About')
+                )
               ],
             ),
           ),
@@ -65,7 +77,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(user.displayName,style: TextStyle(color: CClass.textColorTheme())),
+                  Text(user.displayName,style: TextStyle(color: CClass.textColor1)),
                   const SizedBox(height: 10),
                   GestureDetector(
                     onTap: (){
@@ -79,7 +91,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(user.email,style: TextStyle(color: CClass.textColorTheme())),
+                  Text(user.email,style: TextStyle(color: CClass.textColor1)),
                 ],
               ),
             ),

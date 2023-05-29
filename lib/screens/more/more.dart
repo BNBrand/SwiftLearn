@@ -49,13 +49,24 @@ class _MoreScreenState extends State<MoreScreen> {
         }
     );
   }
+  _showAboutDialog(){
+    showAboutDialog(
+        context: context,
+        applicationName: 'SwiftLearn',
+        applicationVersion: '1.0.0',
+        applicationLegalese: 'BNBrand Copyright @ 2023',
+        applicationIcon: const Icon(Icons.info),
+    );
+
+  }
 
   List<Widget> pages = [
     ProfileScreen(profileId: FirebaseAuth.instance.currentUser!.uid,),
-    const Text('Logout')
+    const Text('Logout'),
+    const Text('about')
   ];
-  List<String> title = ['Profile', 'Logout'];
-  List<IconData> icons = [Icons.account_box, Icons.logout];
+  List<String> title = ['Profile', 'Logout','About'];
+  List<IconData> icons = [Icons.account_box, Icons.logout, Icons.info];
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +80,11 @@ class _MoreScreenState extends State<MoreScreen> {
               setState(() {
                 selectedIndex = index;
               });
-              if(index == 1){
-                _showImageDialog();
-              }else{
+                index == 1 ? _showImageDialog() :
+                index == 2 ? _showAboutDialog() :
                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
                   return pages[index];
                 }));
-              }
             },
             child: Card(
               color: CClass.containerColor,

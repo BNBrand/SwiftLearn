@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:swift_learn/models/post_model.dart';
 import 'package:swift_learn/screens/more/profile/edit_profile.dart';
 import 'package:swift_learn/widgets/post_tile.dart';
-
+import 'package:intl/intl.dart';
 import '../../../models/user_model.dart';
 import '../../../utils/color.dart';
 import '../../../widgets/loading_image.dart';
@@ -29,8 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = false;
   int postCount = 0;
   int starCount = 0;
-  int followerCount = 0;
-  int followingCount = 0;
   bool isDetails = false;
   String displayNameUser = '';
   String photoURLUser = '';
@@ -66,21 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     });
-    await FirebaseFirestore.instance.collection('followers').doc(widget.profileId)
-        .collection('userFollowers').get().then((snapshot){
-        setState(() {
-          followerCount = snapshot.docs.length;
-        });
-    });
-    await FirebaseFirestore.instance.collection('following').doc(widget.profileId)
-        .collection('userFollowing')
-        .get().then((snapshot){
-        setState(() {
-          followingCount = snapshot.docs.length;
-        });
-
-    });
-
   }
   gridViewPost(){
     selectedGrid = true;
@@ -162,25 +145,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       return Column(children: posts,);
   }
-  handleFollow() async{
+  _handleFollow() async{
     setState(() {
       isFollowing = true;
     });
     await FirebaseFirestore.instance.collection('followers').doc(widget.profileId)
         .collection('userFollowers').doc(FirebaseAuth.instance.currentUser!.uid)
         .set({
-          'displayName': displayNameUser,
-          'photoURL': photoURLUser,
           'ownerId': FirebaseAuth.instance.currentUser!.uid,
-          'followedAt': Timestamp.now(),
+          'followedAt': DateFormat.yMMMMd().add_jms().format(DateTime.now()),
     });
     await FirebaseFirestore.instance.collection('following').doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('userFollowing').doc(widget.profileId)
         .set({
-          'displayName': displayName,
-          'photoURL': photoURL,
           'ownerId': widget.profileId,
-          'followedAt': Timestamp.now(),
+          'followedAt': DateFormat.yMMMMd().add_jms().format(DateTime.now()),
     });
     await FirebaseFirestore.instance.collection('feed').doc(widget.profileId)
         .collection('feedItems').doc(FirebaseAuth.instance.currentUser!.uid)
@@ -194,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
     _getData();
   }
-  handleUnfollow() async{
+  _handleUnfollow() async{
     setState(() {
       isFollowing = false;
     });
@@ -213,7 +192,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return FutureBuilder(
         future: FirebaseFirestore.instance.collection('users').doc(widget.profileId).get(),
         builder: (context, snapshot) {
-
           if (!snapshot.hasData) {
             return SizedBox(
                 height: 400,
@@ -323,7 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       )
                                           : !isFollowing ?
                                       GestureDetector(
-                                        onTap: handleFollow,
+                                        onTap: _handleFollow,
                                         child: Column(
                                           children: [
                                             Container(height: 70,),
@@ -337,13 +315,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       ): isFollowing ?
                                       GestureDetector(
-                                        onTap: handleUnfollow,
+                                        onTap: _handleUnfollow,
                                         child: Column(
                                           children: [
                                             Container(height: 70,),
                                             Row(
                                               children: [
-                                                Icon(Icons.add,color: CClass.buttonColor2,),
+                                                Icon(Icons.clear,color: CClass.buttonColor2,),
                                                 Text('Unfollow',style: TextStyle(color: CClass.buttonColor2),)
                                               ],
                                             ),
@@ -383,7 +361,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           );
                                         }));
                                       },
-                                      child: countColumn('Followers', followerCount),
+                                      child: StreamBuilder(
+                                        stream: FirebaseFirestore.instance.collection('followers').doc(widget.profileId)
+                                            .collection('userFollowers').snapshots(),
+                                        builder: (context, snapshot) {
+                                          if(!snapshot.hasData){
+                                            return countColumn('Followers', 0);
+                                          }
+                                          if(snapshot.data!.docs.isEmpty){
+                                            return countColumn('Followers', 0);
+                                          }
+                                          int followerCount = snapshot.data!.docs.length;
+                                          return countColumn('Followers', followerCount);
+                                        }
+                                      ),
                                     ),
 
                                     Container(
@@ -399,7 +390,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           );
                                         }));
                                       },
-                                      child: countColumn('Following', followingCount),
+                                      child: StreamBuilder(
+                                          stream: FirebaseFirestore.instance.collection('following').doc(widget.profileId)
+                                              .collection('userFollowing').snapshots(),
+                                          builder: (context, snapshot) {
+                                            if(!snapshot.hasData){
+                                              return countColumn('Following', 0);
+                                            }
+                                            if(snapshot.data!.docs.isEmpty){
+                                              return countColumn('Following', 0);
+                                            }
+                                            int followingCount = snapshot.data!.docs.length;
+                                          return countColumn('Following', followingCount);
+                                        }
+                                      ),
                                     ),
                                   ],
                                 ),

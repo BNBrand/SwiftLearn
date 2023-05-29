@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: pages[_page],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: CClass.secondaryBGColorTheme(),
+        backgroundColor: CClass.secondaryBackgroundColor,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         onTap: onPageChanged,

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../../models/user_model.dart';
 import '../../utils/color.dart';
 import '../more/profile/profile_screen.dart';
@@ -17,6 +17,8 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
   Future<QuerySnapshot>? searchResultFuture;
+  String displayNameUser = '';
+  String photoURLUser = '';
 
   handleSearch(String query){
     Future<QuerySnapshot> users = FirebaseFirestore.instance.collection('users')
@@ -41,6 +43,54 @@ class _SearchScreenState extends State<SearchScreen> {
           List<Padding> searchResults = [];
           snapshot.data!.docs.forEach((doc) {
             Users user = Users.fromDocument(doc);
+            Future _getData() async{
+              await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .get().then((snapshot) async{
+                if(snapshot.exists){
+                  setState(() {
+                    displayNameUser = snapshot.data()!['displayName'];
+                    photoURLUser = snapshot.data()!['photoURL'];
+                  });
+                }
+              });
+            }
+            handleFollow() async{
+              await FirebaseFirestore.instance.collection('followers').doc(user.uid)
+                  .collection('userFollowers').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .set({
+                'ownerId': FirebaseAuth.instance.currentUser!.uid,
+                'followedAt': DateFormat.yMMMMd().add_jms().format(DateTime.now()),
+              });
+              await FirebaseFirestore.instance.collection('following').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .collection('userFollowing').doc(user.uid)
+                  .set({
+                'ownerId': user.uid,
+                'followedAt': DateFormat.yMMMMd().add_jms().format(DateTime.now()),
+              });
+              await FirebaseFirestore.instance.collection('feed').doc(user.uid)
+                  .collection('feedItems').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .set({
+                'type':'follow',
+                'uid':FirebaseAuth.instance.currentUser!.uid,
+                'ownerId': user.uid,
+                'displayName': displayNameUser,
+                'photoURL': photoURLUser,
+                'followedAt': Timestamp.now(),
+              });
+              _getData();
+            }
+            handleUnfollow() async{
+              await FirebaseFirestore.instance.collection('followers').doc(user.uid)
+                  .collection('userFollowers').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .delete();
+              await FirebaseFirestore.instance.collection('following').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .collection('userFollowing').doc(user.uid)
+                  .delete();
+              await FirebaseFirestore.instance.collection('feed').doc(user.uid)
+                  .collection('feedItems').doc(FirebaseAuth.instance.currentUser!.uid)
+                  .delete();
+              _getData();
+            }
             searchResults.add(
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -57,13 +107,31 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     title: Text(user.displayName, overflow: TextOverflow.ellipsis,),
                     subtitle: Text(user.email, overflow: TextOverflow.ellipsis),
-                    trailing: user.uid != FirebaseAuth.instance.currentUser!.uid ? TextButton.icon(
-                      label: Text('Follow',style: TextStyle(color: CClass.buttonColor2),),
-                      icon: Icon(Icons.add,color: CClass.buttonColor2,),
-                      onPressed: (){},
-                    )
-                        :
-                    null,
+                    trailing: user.uid != FirebaseAuth.instance.currentUser!.uid ?
+                     StreamBuilder(
+                      stream: FirebaseFirestore.instance.collection('followers').doc(user.uid)
+                          .collection('userFollowers').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                      builder: (context, snapshot) {
+                        if(!snapshot.hasData){
+                          return TextButton.icon(
+                            label: Text('Follow',style: TextStyle(color: CClass.buttonColor2),),
+                            icon: Icon(Icons.add,color: CClass.buttonColor2,),
+                            onPressed: handleUnfollow,
+                          );
+                        }
+                        return snapshot.data!.exists ?
+                        TextButton.icon(
+                          label: Text('UnFollow',style: TextStyle(color: CClass.buttonColor),),
+                          icon: Icon(Icons.close,color: CClass.buttonColor,),
+                          onPressed: handleUnfollow,
+                        ):
+                        TextButton.icon(
+                          label: Text('Follow',style: TextStyle(color: CClass.buttonColor2),),
+                          icon: Icon(Icons.add,color: CClass.buttonColor2,),
+                          onPressed: handleFollow,
+                        );
+                      }
+                    ): null,
                   ),
                 ),
               ),
@@ -118,6 +186,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

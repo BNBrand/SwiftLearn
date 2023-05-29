@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_learn/screens/notes/notes_course.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:intl/intl.dart';
 import '../../utils/color.dart';
 
 class NoteScreen extends StatefulWidget {
@@ -76,7 +76,7 @@ class _NoteScreenState extends State<NoteScreen> {
         {
           'courseTitle': titleController.text.trim().toUpperCase(),
           'titleId': titleId,
-          'createdAt': DateTime.now().toString()
+          'createdAt': DateFormat.yMMMMd().add_jms().format(DateTime.now())
         });
     titleId = const Uuid().v4();
   }
@@ -108,8 +108,71 @@ class _NoteScreenState extends State<NoteScreen> {
            String title = snapshot.data!.docs[index]['courseTitle'];
            String createdAt = snapshot.data!.docs[index]['createdAt'];
            String titleID = snapshot.data!.docs[index]['titleId'];
-           _deleteNote() async{
+           deleteNote() async{
              await FirebaseFirestore.instance.collection('notes').doc(FirebaseAuth.instance.currentUser!.uid).collection('course').doc(titleID).delete();
+           }
+           updateNoteTitle() async{
+             await FirebaseFirestore.instance.collection('notes').doc(FirebaseAuth.instance.currentUser!.uid).collection('course').doc(titleID).update(
+                 {
+                   'courseTitle': titleController.text.trim().toUpperCase(),
+                 });
+           }
+           showDialogBoxUpdate(){
+             setState(() {
+               titleController = TextEditingController(text: title);
+             });
+             showDialog(
+                 context: context,
+                 builder: (context){
+                   return AlertDialog(
+                     backgroundColor: CClass.bGColorTheme(),
+                     title: Column(
+                       children: [
+                         const Text('Enter Course Title'),
+                         const SizedBox(height: 30,),
+                         TextField(
+                           controller: titleController,
+                           decoration: InputDecoration(
+                               hintText: 'Enter Title',
+                               filled: true,
+                               fillColor: CClass.containerColor,
+                               border: InputBorder.none
+                           ),
+                         ),
+                         const SizedBox(height: 20,),
+                         Row(
+                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                           children: [
+                             ElevatedButton(
+                               onPressed: (){
+                                 Navigator.pop(context);
+                                 titleController.clear();
+                               },
+                               child: const Text('Cancel'),
+                               style: ElevatedButton.styleFrom(
+                                   backgroundColor: CClass.bTColorTheme()
+                               ),
+                             ),
+                             ElevatedButton(
+                               onPressed: () async{
+                                 setState(() {
+                                   updateNoteTitle();
+                                 });
+                                 Navigator.pop(context);
+                                 titleController.clear();
+                               },
+                               style: ElevatedButton.styleFrom(
+                                   backgroundColor: CClass.bTColorTheme()
+                               ),
+                               child: const Text('Update'),
+                             )
+                           ],
+                         ),
+                       ],
+                     ),
+                   );
+                 }
+             );
            }
            return Column(
              children: [
@@ -123,8 +186,8 @@ class _NoteScreenState extends State<NoteScreen> {
                    shadowColor: CClass.buttonColor2,
                    child: ListTile(
                      leading: IconButton(
-                       onPressed: (){},
-                       icon: Icon(Icons.edit),
+                       onPressed: showDialogBoxUpdate,
+                       icon: Icon(Icons.edit,color: CClass.buttonColor2,),
                      ),
                      title: Text(title,
                        style: TextStyle(
@@ -133,10 +196,10 @@ class _NoteScreenState extends State<NoteScreen> {
                        ),
                        overflow: TextOverflow.ellipsis,
                      ),
-                     subtitle: Text(createdAt),
+                     subtitle: Text('Created on $createdAt'),
                      trailing: IconButton(
-                       onPressed: _deleteNote,
-                       icon: Icon(Icons.delete),
+                       onPressed: deleteNote,
+                       icon: Icon(Icons.delete,color: Colors.red,),
                      ),
                    ),
                  ),

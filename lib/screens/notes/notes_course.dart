@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:intl/intl.dart';
 import '../../utils/color.dart';
 import 'note_content.dart';
 
@@ -79,7 +79,7 @@ class _NoteCourseState extends State<NoteCourse> {
         {
           'topicTitle': topicController.text.trim().toUpperCase(),
           'topicId': topicId,
-          'createdAt': DateTime.now().toString(),
+          'createdAt': DateFormat.yMMMMd().add_jms().format(DateTime.now()),
           'content': '',
         });
     topicId = const Uuid().v4();

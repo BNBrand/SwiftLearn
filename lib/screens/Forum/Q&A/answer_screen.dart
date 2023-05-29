@@ -16,14 +16,14 @@ class AnswerScreen extends StatefulWidget {
   String ownerPhoto;
   String ownerName;
   AnswerScreen({
-   required this.answers,
-   required this.question,
-   required this.questionId,
-   required this.createdAt,
-   required this.ownerId,
-   required this.ownerPhoto,
-   required this.ownerName,
-});
+    required this.answers,
+    required this.question,
+    required this.questionId,
+    required this.createdAt,
+    required this.ownerId,
+    required this.ownerPhoto,
+    required this.ownerName,
+  });
 
   @override
   State<AnswerScreen> createState() => _AnswerScreenState();
@@ -64,9 +64,9 @@ class _AnswerScreenState extends State<AnswerScreen> {
   }
   @override
   void initState() {
-   _getData();
-   FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-       .collection('answerStars');
+    _getData();
+    FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('answerStars');
     super.initState();
   }
   @override
@@ -101,12 +101,12 @@ class _AnswerScreenState extends State<AnswerScreen> {
                     children: [
                       Text(widget.ownerName,overflow: TextOverflow.ellipsis,),
                       Text(timeago.format(widget.createdAt.toDate()),
-                      style: TextStyle(fontSize: 14,color: CClass.textColor2),)
+                        style: TextStyle(fontSize: 14,color: CClass.textColor2),)
                     ],
                   ),
                 ),
                 subtitle: Text(widget.question,
-                style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 50,),
@@ -135,29 +135,6 @@ class _AnswerScreenState extends State<AnswerScreen> {
                         String answerID = snapshot.data!.docs[index]['answerId'];
                         String ownerID = snapshot.data!.docs[index]['ownerId'];
                         String photoURL = snapshot.data!.docs[index]['photoURL'];
-                        String displayNameUser = '';
-                        String photoURLUser = '';
-                        Future getData() async{
-                          await FirebaseFirestore.instance.collection('users').doc(ownerID)
-                              .get().then((snapshot) async{
-                            if(snapshot.exists){
-                              setState(() {
-                                displayNameUser = snapshot.data()!['displayName'];
-                                photoURLUser = snapshot.data()!['photoURL'];
-                              });
-                            }
-                          });
-                        }
-                        updateUserInfo()async{
-                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
-                              .collection('answers').doc(answerID).update(
-                              {
-                                'displayName': displayNameUser,
-                                'photoURL': photoURLUser,
-                              });
-                        }
-                        getData();
-                        updateUserInfo();
                         deleteAnswer() async{
                           await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID).delete();
                           await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
@@ -210,35 +187,35 @@ class _AnswerScreenState extends State<AnswerScreen> {
                               null,
                             ),
                             StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .collection('answerStars').doc(answerID).snapshots(),
-                              builder: (context, snapshot) {
-                                if(!snapshot.hasData){
-                                  return TextButton.icon(
-                                    onPressed: (){},
+                                stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('answerStars').doc(answerID).snapshots(),
+                                builder: (context, snapshot) {
+                                  if(!snapshot.hasData){
+                                    return TextButton.icon(
+                                      onPressed: (){},
+                                      icon : Icon(Icons.star,color: CClass.textColor2,),
+                                      label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                                    );
+                                  }
+                                  return snapshot.data!.exists ? TextButton.icon(
+                                    onPressed: (){
+                                      setState(() {
+                                        handleDeleteStar();
+                                      });
+                                    },
+                                    icon : Icon(Icons.star,color: CClass.starColor,),
+                                    label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                                  ):
+                                  TextButton.icon(
+                                    onPressed: (){
+                                      setState(() {
+                                        handleStar();
+                                      });
+                                    },
                                     icon : Icon(Icons.star,color: CClass.textColor2,),
                                     label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
                                   );
                                 }
-                                return snapshot.data!.exists ? TextButton.icon(
-                                  onPressed: (){
-                                    setState(() {
-                                      handleDeleteStar();
-                                    });
-                                  },
-                                  icon : Icon(Icons.star,color: CClass.starColor,),
-                                  label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                ):
-                                TextButton.icon(
-                                  onPressed: (){
-                                    setState(() {
-                                      handleStar();
-                                    });
-                                  },
-                                  icon : Icon(Icons.star,color: CClass.textColor2,),
-                                  label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                );
-                              }
                             ),
                             Divider(color: CClass.containerColor,)
                           ],
