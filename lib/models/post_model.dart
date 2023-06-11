@@ -118,7 +118,64 @@ class _PostState extends State<Post> {
       }
     });
   }
-  void _showImageDialog(){
+  handleStarFeed() async{
+    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
+        .collection('feedData').doc(postId)
+        .set({
+      'type': 'star',
+      'displayName': displayNameUser,
+      'photoURL': photoURLUser,
+      'uid': FirebaseAuth.instance.currentUser!.uid,
+      'postId': postId,
+      'createdAt': Timestamp.now(),
+      'postImage': postImage
+    });
+  }
+  handleUnStarFeed() async {
+    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
+        .collection('feedData').doc(postId).delete();
+  }
+  deletePost() async{
+    try{
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+      await FirebaseStorage.instance.ref().child('postImages').child('post_$postId.jpg').delete();
+      DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('postStars').doc(postId).get();
+      if(postSnapshot.exists){
+        await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('postStars').doc(postId)
+            .update({postId: FieldValue.delete()});
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(ownerId)
+          .update({'totalStars': FieldValue.increment(-stars)});
+    }catch(e){
+      print(e.toString());
+    }
+  }
+  handleStar() async{
+    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('postStars').doc(postId).set({});
+    FirebaseFirestore.instance.collection('posts').doc(postId)
+        .update({'stars': FieldValue.increment(1)});
+    await FirebaseFirestore.instance.collection('users').doc(ownerId)
+        .update({'totalStars': FieldValue.increment(1)});
+  }
+  handleDeleteStar() async{
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('postStars').doc(postId).get();
+    if(snapshot.exists){
+      await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('postStars').doc(postId).delete();
+      await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('postStars').doc(postId).delete();
+      FirebaseFirestore.instance.collection('posts').doc(postId)
+          .update({'stars': FieldValue.increment(-1)});
+      await FirebaseFirestore.instance.collection('users').doc(ownerId)
+          .update({'totalStars': FieldValue.increment(-1)});
+    }
+  }
+  void _showDeleteDialog(){
     showDialog(
         context: context,
         builder: (context){
@@ -152,91 +209,6 @@ class _PostState extends State<Post> {
         }
     );
   }
-  handleStarFeed() async{
-    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
-        .collection('feedData').doc(postId)
-        .set({
-      'type': 'star',
-      'displayName': displayNameUser,
-      'photoURL': photoURLUser,
-      'uid': FirebaseAuth.instance.currentUser!.uid,
-      'postId': postId,
-      'createdAt': Timestamp.now(),
-      'postImage': postImage
-    });
-  }
-  handleUnStarFeed() async {
-    await FirebaseFirestore.instance.collection('feed').doc(ownerId)
-        .collection('feedData').doc(postId).delete();
-  }
-  handleStar() async{
-    await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .get().then((value) => {
-      if(value.data() != null){
-        if(value.data()!.keys.contains(postId)){
-          FirebaseFirestore.instance.runTransaction((Transaction tx) async{
-            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
-            if(postSnapshot.exists){
-              await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .update({postId: FieldValue.delete()});
-
-              FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                  .then((value) => data = value.data()!);
-
-              tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-                'stars': FieldValue.increment(-1)
-              });
-              tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
-                'totalStars': FieldValue.increment(-1)
-              });
-              handleUnStarFeed();
-            }
-          }),
-        }else{
-          FirebaseFirestore.instance.runTransaction((tx) async{
-            DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
-            if(postSnapshot.exists){
-              await  FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                  .update({postId: true});
-              setState((){
-                FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                    .then((value) => data = value.data()!);
-              });
-
-              tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-                'stars': FieldValue.increment(1)
-
-              });
-              tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
-                'totalStars': FieldValue.increment(1)
-              });
-              handleStarFeed();
-            }
-          }),
-        }
-      }else{
-        FirebaseFirestore.instance.runTransaction((tx) async{
-          DocumentSnapshot postSnapshot = await tx.get(FirebaseFirestore.instance.collection('posts').doc(postId));
-          if(postSnapshot.exists){
-            await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                .set({postId: true});
-
-            FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get()
-                .then((value) => data = value.data()!);
-
-            tx.update(FirebaseFirestore.instance.collection('posts').doc(postId), <String, dynamic>{
-              'stars': FieldValue.increment(1)
-
-            });
-            tx.update(FirebaseFirestore.instance.collection('users').doc(ownerId), <String, dynamic>{
-              'totalStars': FieldValue.increment(1)
-            });
-            handleStarFeed();
-          }
-        }),
-      }
-    });
-  }
   buildPostHeader(){
     return FutureBuilder(
         future: FirebaseFirestore.instance.collection('users').doc(ownerId).get(),
@@ -262,29 +234,11 @@ class _PostState extends State<Post> {
             trailing: FirebaseAuth.instance.currentUser!.uid != ownerId ? null
                 : IconButton(
               icon: Icon(Icons.delete),
-              onPressed: _showImageDialog,
+              onPressed: _showDeleteDialog,
             ),
           );
         }
     );
-  }
-  deletePost() async{
-    try{
-      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
-      await FirebaseStorage.instance.ref().child('postImages').child('post_$postId.jpg').delete();
-      DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid).get();
-      if(postSnapshot.exists){
-        await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-            .update({postId: FieldValue.delete()});
-      }
-
-      await FirebaseFirestore.instance.collection('users').doc(ownerId)
-          .update({'totalStars': FieldValue.increment(-currentStars)});
-      await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('commentStars').doc(FirebaseAuth.instance.currentUser!.uid).delete();
-    }catch(e){
-      print(e.toString());
-    }
   }
   buildCaption(){
     return Column(
@@ -354,16 +308,33 @@ class _PostState extends State<Post> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              IconButton(
-                  onPressed: (){
-                    setState(() {
-                      handleStar();
-                    });
-                  },
-                  icon:
-                  Icon(Icons.star,
-                    color: data.containsKey(postId)? CClass.starColor : CClass.textColor2,
-                  )
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('postStars').doc(postId).snapshots(),
+                  builder: (context, snapshot) {
+                    if(!snapshot.hasData){
+                      return IconButton(
+                        onPressed: (){},
+                        icon : Icon(Icons.star,color: CClass.textColor2,),
+                      );
+                    }
+                    return snapshot.data!.exists ? IconButton(
+                        onPressed: (){
+                          setState(() {
+                            handleDeleteStar();
+                          });
+                        },
+                        icon : Icon(Icons.star,color: CClass.starColor,)
+                    ):
+                    IconButton(
+                        onPressed: (){
+                          setState(() {
+                            handleStar();
+                          });
+                        },
+                        icon : Icon(Icons.star,color: CClass.textColor2,)
+                    );
+                  }
               ),
               IconButton(
                   onPressed: ()=> showComments(

@@ -333,16 +333,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if(isStudent != null){
-      if(widget.occupation == 'Student'){
-        setState(() {
-          isStudent = true;
-        });
-      }else{
-        setState(() {
-          isStudent = false;
-        });
-      }
+    if(widget.occupation == 'Student'){
+      setState(() {
+        isStudent = true;
+      });
+    }else{
+      setState(() {
+        isStudent = false;
+      });
     }
     return Scaffold(
       backgroundColor: CClass.bGColorTheme(),

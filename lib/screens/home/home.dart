@@ -23,10 +23,6 @@ class _HomeState extends State<Home> {
     return StreamBuilder(
         stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return showSnackBar(context, 'There is an error');
-          }
-
           if (!snapshot.hasData) {
             return const Loading();
           }

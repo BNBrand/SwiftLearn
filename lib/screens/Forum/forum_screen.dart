@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swift_learn/screens/Forum/Q&A/q&a_screen.dart';
+import 'package:swift_learn/screens/Forum/Quiz/quiz_sceen.dart';
 import 'package:swift_learn/screens/Forum/search_sceen.dart';
 import 'package:swift_learn/screens/Forum/social_media/post_screen.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +15,7 @@ import '../../utils/color.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_button.dart';
 import 'social_media/comments.dart';
+import 'package:intl/intl.dart';
 
 class ForumScreen extends StatefulWidget {
 
@@ -26,6 +28,7 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
   TextEditingController captionController = TextEditingController();
   TextEditingController searchController = TextEditingController();
   TextEditingController questionController = TextEditingController();
+  TextEditingController quizController = TextEditingController();
   Future<QuerySnapshot>? searchResultFuture;
   PageController pageController = PageController();
   TabController? tabController;
@@ -35,9 +38,10 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
   bool isUploading = false;
   String postId = const Uuid().v4();
   String questionId = const Uuid().v4();
-  String? displayNameUser = '';
-  String? email = '';
-  String? photoURLUser = '';
+  String quizId = const Uuid().v4();
+  String displayNameUser = '';
+  String occupation = '';
+  String photoURLUser = '';
   int selectedIndex = 0;
 
   Future _getData() async{
@@ -47,6 +51,7 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         setState(() {
           displayNameUser = snapshot.data()!['displayName'];
           photoURLUser = snapshot.data()!['photoURL'];
+          occupation = snapshot.data()!['occupation'];
         });
       }
     });
@@ -134,7 +139,6 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         'ownerId': FirebaseAuth.instance.currentUser!.uid,
         'displayName': displayNameUser,
         'photoURL': photoURLUser,
-        'email': email,
         'postImage': imageUrl,
         'caption': captionController.text.trim(),
         'createdAt': Timestamp.now(),
@@ -157,7 +161,7 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            Container(
+            SizedBox(
               height: 250.0,
               width: MediaQuery.of(context).size.width * 0.8,
               child: Center(
@@ -234,9 +238,6 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
       );
     }));
   }
-  quizContent(){
-    return Text('Quiz');
-  }
   _handleQuestion()async{
     if(questionController.text.isNotEmpty){
       await FirebaseFirestore.instance.collection('questions').doc(questionId).set(
@@ -255,6 +256,18 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
     }else{
       Navigator.of(context).pop();
     }
+  }
+  _handleQuizCourse()async{
+    await FirebaseFirestore.instance.collection('quiz').doc(quizId).set(
+        {
+          'quizTitle': quizController.text.trim().toUpperCase(),
+          'quizId': quizId,
+          'ownerId': FirebaseAuth.instance.currentUser!.uid,
+          'photoURL': photoURLUser,
+          'displayName': displayNameUser,
+          'createdAt': DateFormat.yMMMMd().add_jms().format(DateTime.now())
+        });
+    quizId = const Uuid().v4();
   }
   _showQuestionSheet(BuildContext context){
     return showModalBottomSheet(
@@ -308,6 +321,114 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         }
     );
   }
+  _showQuizDialog(BuildContext context){
+    return showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            backgroundColor: CClass.bGColorTheme(),
+            title: Column(
+              children: [
+                const Text('Enter Quiz Title'),
+                const SizedBox(height: 30,),
+                TextField(
+                  controller: quizController,
+                  decoration: InputDecoration(
+                      hintText: 'Enter Title',
+                      filled: true,
+                      fillColor: CClass.containerColor,
+                      border: InputBorder.none
+                  ),
+                ),
+                const SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        quizController.clear();
+                      },
+                      child: const Text('Cancel'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: CClass.bTColorTheme()
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async{
+                        setState(() {
+                         _handleQuizCourse();
+                        });
+                        Navigator.pop(context);
+                        quizController.clear();
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: CClass.bTColorTheme()
+                      ),
+                      child: const Text('Done'),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
+  showDialogBox(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            backgroundColor: CClass.bGColorTheme(),
+            title: Column(
+              children: [
+                const Text('Enter Course'),
+                const SizedBox(height: 30,),
+                TextField(
+                  controller: quizController,
+                  decoration: InputDecoration(
+                      hintText: 'Enter Title',
+                      filled: true,
+                      fillColor: CClass.containerColor,
+                      border: InputBorder.none
+                  ),
+                ),
+                const SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        quizController.clear();
+                      },
+                      child: const Text('Cancel'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: CClass.bTColorTheme()
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async{
+                        setState(() {
+                          _handleQuizCourse();
+                        });
+                        Navigator.pop(context);
+                        quizController.clear();
+                      },
+                      child: const Text('Save'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: CClass.bTColorTheme()
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
 
   @override
   void initState() {
@@ -335,6 +456,13 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         onPressed: _showImageDialog,
         child: Icon(Icons.upload,color: CClass.textColor1,),
         backgroundColor: CClass.buttonColor,
+      ):
+      selectedIndex == 2 ? FloatingActionButton(
+        onPressed: (){
+          _showQuizDialog(context);
+        },
+        child: Icon(Icons.quiz,color: CClass.textColor1,),
+        backgroundColor: Colors.red,
       ):null,
       appBar: AppBar(
         elevation: 0.0,
@@ -359,7 +487,7 @@ class _ForumScreenState extends State<ForumScreen> with SingleTickerProviderStat
         children: [
           const QAScreen(),
           const PostScreen(),
-          quizContent(),
+          QuizScreen(),
           const SearchScreen()
         ],
       )

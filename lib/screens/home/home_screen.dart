@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swift_learn/Meetings/meetings/meeting_screen.dart';
 import 'package:swift_learn/screens/Forum/forum_screen.dart';
 import 'package:swift_learn/screens/more/more.dart';
 import 'package:swift_learn/screens/notes/notes_screen.dart';
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> pages = [
     Home(),
     ForumScreen(),
-    const Text('Contacts'),
+    MeetingScreen(),
     NoteScreen(),
     const MoreScreen()
   ];

@@ -8,12 +8,10 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return  Center(
         child: SpinKitSpinningLines(
             color: CClass.bTColor2Theme()
         ),
-      ),
-    );
+      );
   }
 }

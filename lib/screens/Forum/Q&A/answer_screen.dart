@@ -80,151 +80,272 @@ class _AnswerScreenState extends State<AnswerScreen> {
       ),
       body: Column(
         children: [
-          Column(
-            children: [
-              ListTile(
-                leading: GestureDetector(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                      return ProfileScreen(profileId: widget.ownerId,);
-                    }));
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: CClass.containerColor,
-                    backgroundImage: CachedNetworkImageProvider(widget.ownerPhoto),
-                  ),
-                ),
-                title: Padding(
-                  padding: const EdgeInsets.only(bottom: 10,right: 60),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(widget.ownerName,overflow: TextOverflow.ellipsis,),
-                      Text(timeago.format(widget.createdAt.toDate()),
-                        style: TextStyle(fontSize: 14,color: CClass.textColor2),)
-                    ],
-                  ),
-                ),
-                subtitle: Text(widget.question,
-                  style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(height: 50,),
-              TextButton.icon(
-                onPressed: (){},
-                icon : Icon(Icons.question_answer_outlined,color: Colors.green,),
-                label: Text(widget.answers.toString(),style: TextStyle(color: CClass.textColor1),),
-              ),
-              Divider(color: CClass.containerColor,thickness: 5,)
-            ],
-          ),
           Expanded(
-              child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
-                      .collection('answers').orderBy('answeredAt', descending: false).snapshots(),
-                  builder: (context, snapshot) {
-                    if(!snapshot.hasData){
-                      return  Center(child: CircularProgressIndicator(color: CClass.buttonColor2,));
-                    }
-                    return snapshot.data!.docs.isNotEmpty ? ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, int index){
-                        String answer = snapshot.data!.docs[index]['answer'];
-                        Timestamp answeredAt = snapshot.data!.docs[index]['answeredAt'];
-                        int answerStars = snapshot.data!.docs[index]['answerStars'];
-                        String answerID = snapshot.data!.docs[index]['answerId'];
-                        String ownerID = snapshot.data!.docs[index]['ownerId'];
-                        String photoURL = snapshot.data!.docs[index]['photoURL'];
-                        deleteAnswer() async{
-                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID).delete();
-                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
-                              .update({'answers' : FieldValue.increment(-1)});
-                          await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                              .collection('answerStars').doc(answerID).delete();
-                          await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
-                              .update({'totalStars': FieldValue.increment(-answerStars)});
-                        }
-                        handleStar() async{
-                          await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                              .collection('answerStars').doc(answerID).set({});
-                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID)
-                              .update({'answerStars': FieldValue.increment(1)});
-                          await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
-                              .update({'totalStars': FieldValue.increment(1)});
-                        }
-                        handleDeleteStar() async{
-                          DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                              .collection('answerStars').doc(answerID).get();
-                          if(snapshot.exists){
-                            await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                .collection('answerStars').doc(answerID).delete();
-                            await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID)
-                                .update({'answerStars': FieldValue.increment(-1)});
-                            await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
-                                .update({'totalStars': FieldValue.increment(-1)});
-                          }
-                        }
-                        return Column(
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
+                    .collection('answers').orderBy('answeredAt', descending: false).snapshots(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData){
+                    return  Column(
+                      children: [
+                        Column(
                           children: [
                             ListTile(
                               leading: GestureDetector(
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context){
-                                    return ProfileScreen(profileId: ownerID,);
+                                    return ProfileScreen(profileId: widget.ownerId,);
                                   }));
                                 },
                                 child: CircleAvatar(
                                   backgroundColor: CClass.containerColor,
-                                  backgroundImage: CachedNetworkImageProvider(photoURL),
+                                  backgroundImage: CachedNetworkImageProvider(widget.ownerPhoto),
                                 ),
                               ),
-                              title: Text(answer),
-                              subtitle: Text(timeago.format(answeredAt.toDate())),
-                              trailing: ownerID == uid ? IconButton(
-                                onPressed: deleteAnswer,
-                                icon: Icon(Icons.delete,color: CClass.buttonColor2,),
-                              ):
-                              null,
+                              title: Padding(
+                                padding: const EdgeInsets.only(bottom: 10,right: 60),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(widget.ownerName,overflow: TextOverflow.ellipsis,),
+                                    Text(timeago.format(widget.createdAt.toDate()),
+                                      style: TextStyle(fontSize: 14,color: CClass.textColor2),)
+                                  ],
+                                ),
+                              ),
+                              subtitle: Text(widget.question,
+                                style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
+                              ),
                             ),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                    .collection('answerStars').doc(answerID).snapshots(),
-                                builder: (context, snapshot) {
-                                  if(!snapshot.hasData){
-                                    return TextButton.icon(
-                                      onPressed: (){},
-                                      icon : Icon(Icons.star,color: CClass.textColor2,),
-                                      label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                    );
-                                  }
-                                  return snapshot.data!.exists ? TextButton.icon(
-                                    onPressed: (){
-                                      setState(() {
-                                        handleDeleteStar();
-                                      });
-                                    },
-                                    icon : Icon(Icons.star,color: CClass.starColor,),
-                                    label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                  ):
-                                  TextButton.icon(
-                                    onPressed: (){
-                                      setState(() {
-                                        handleStar();
-                                      });
-                                    },
+                            SizedBox(height: 50,),
+                            TextButton.icon(
+                              onPressed: (){},
+                              icon : Icon(Icons.question_answer_outlined,color: Colors.green,),
+                              label: Text(widget.answers.toString(),style: TextStyle(color: CClass.textColor1),),
+                            ),
+                            Divider(color: CClass.containerColor,thickness: 5,)
+                          ],
+                        ),
+                        Expanded(child: Center(child: CircularProgressIndicator(color: CClass.buttonColor2,))),
+                      ],
+                    );
+                  }
+                  return snapshot.data!.docs.isNotEmpty ? ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, int index){
+                      String answer = snapshot.data!.docs[index]['answer'];
+                      Timestamp answeredAt = snapshot.data!.docs[index]['answeredAt'];
+                      int answerStars = snapshot.data!.docs[index]['answerStars'];
+                      String answerID = snapshot.data!.docs[index]['answerId'];
+                      String ownerID = snapshot.data!.docs[index]['ownerId'];
+                      String photoURL = snapshot.data!.docs[index]['photoURL'];
+                      deleteAnswer() async{
+                        await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID).delete();
+                        await FirebaseFirestore.instance.collection('questions').doc(widget.questionId)
+                            .update({'answers' : FieldValue.increment(-1)});
+                        await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('answerStars').doc(answerID).delete();
+                        await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
+                            .update({'totalStars': FieldValue.increment(-answerStars)});
+                      }
+                      handleStar() async{
+                        await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('answerStars').doc(answerID).set({});
+                        await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID)
+                            .update({'answerStars': FieldValue.increment(1)});
+                        await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
+                            .update({'totalStars': FieldValue.increment(1)});
+                      }
+                      handleDeleteStar() async{
+                        DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('answerStars').doc(answerID).get();
+                        if(snapshot.exists){
+                          await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                              .collection('answerStars').doc(answerID).delete();
+                          await FirebaseFirestore.instance.collection('questions').doc(widget.questionId).collection('answers').doc(answerID)
+                              .update({'answerStars': FieldValue.increment(-1)});
+                          await FirebaseFirestore.instance.collection('users').doc(widget.ownerId)
+                              .update({'totalStars': FieldValue.increment(-1)});
+                        }
+                      }
+                      void showDeleteDialog(){
+                        showDialog(
+                            context: context,
+                            builder: (context){
+                              return AlertDialog(
+                                  backgroundColor: CClass.bGColorTheme(),
+                                  title: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: const Text('Delete answer?',textAlign: TextAlign.center,),
+                                  ),
+                                  content: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        InkWell(
+                                            onTap: (){
+                                              setState(() {
+                                                deleteAnswer();
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Yes',style: TextStyle(color: CClass.textColorTheme()),)),
+                                        SizedBox(),
+                                        InkWell(
+                                            onTap: ()=> Navigator.pop(context),
+                                            child: Text('No',style: TextStyle(color: CClass.textColorTheme()),))
+                                      ],
+                                    ),
+                                  )
+                              );
+                            }
+                        );
+                      }
+
+                      return Column(
+                        children: [
+                          Column(
+                            children: [
+                              ListTile(
+                                leading: GestureDetector(
+                                  onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                                      return ProfileScreen(profileId: widget.ownerId,);
+                                    }));
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundColor: CClass.containerColor,
+                                    backgroundImage: CachedNetworkImageProvider(widget.ownerPhoto),
+                                  ),
+                                ),
+                                title: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10,right: 60),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(widget.ownerName,overflow: TextOverflow.ellipsis,),
+                                      Text(timeago.format(widget.createdAt.toDate()),
+                                        style: TextStyle(fontSize: 14,color: CClass.textColor2),)
+                                    ],
+                                  ),
+                                ),
+                                subtitle: Text(widget.question,
+                                  style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              SizedBox(height: 50,),
+                              TextButton.icon(
+                                onPressed: (){},
+                                icon : Icon(Icons.question_answer_outlined,color: Colors.green,),
+                                label: Text(widget.answers.toString(),style: TextStyle(color: CClass.textColor1),),
+                              ),
+                              Divider(color: CClass.containerColor,thickness: 5,)
+                            ],
+                          ),
+                          ListTile(
+                            leading: GestureDetector(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  return ProfileScreen(profileId: ownerID,);
+                                }));
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: CClass.containerColor,
+                                backgroundImage: CachedNetworkImageProvider(photoURL),
+                              ),
+                            ),
+                            title: Text(answer),
+                            subtitle: Text(timeago.format(answeredAt.toDate())),
+                            trailing: ownerID == uid ? IconButton(
+                              onPressed: (){
+                                showDeleteDialog();
+                                },
+                              icon: Icon(Icons.delete,color: CClass.buttonColor2,),
+                            ):
+                            null,
+                          ),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .collection('answerStars').doc(answerID).snapshots(),
+                              builder: (context, snapshot) {
+                                if(!snapshot.hasData){
+                                  return TextButton.icon(
+                                    onPressed: (){},
                                     icon : Icon(Icons.star,color: CClass.textColor2,),
                                     label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
                                   );
                                 }
+                                return snapshot.data!.exists ? TextButton.icon(
+                                  onPressed: (){
+                                    setState(() {
+                                      handleDeleteStar();
+                                    });
+                                  },
+                                  icon : Icon(Icons.star,color: CClass.starColor,),
+                                  label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                                ):
+                                TextButton.icon(
+                                  onPressed: (){
+                                    setState(() {
+                                      handleStar();
+                                    });
+                                  },
+                                  icon : Icon(Icons.star,color: CClass.textColor2,),
+                                  label: Text(answerStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                                );
+                              }
+                          ),
+                          Divider(color: CClass.containerColor,)
+                        ],
+                      );
+                    },
+                  ):
+                  Column(
+                    children: [
+                      Column(
+                        children: [
+                          ListTile(
+                            leading: GestureDetector(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  return ProfileScreen(profileId: widget.ownerId,);
+                                }));
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: CClass.containerColor,
+                                backgroundImage: CachedNetworkImageProvider(widget.ownerPhoto),
+                              ),
                             ),
-                            Divider(color: CClass.containerColor,)
-                          ],
-                        );
-                      },
-                    ):
-                    const Center(child: Text('No answers yet. Be the first to answer'));
-                  }
-              )
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 10,right: 60),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(widget.ownerName,overflow: TextOverflow.ellipsis,),
+                                  Text(timeago.format(widget.createdAt.toDate()),
+                                    style: TextStyle(fontSize: 14,color: CClass.textColor2),)
+                                ],
+                              ),
+                            ),
+                            subtitle: Text(widget.question,
+                              style: TextStyle(fontSize: 25,color: CClass.textColor1,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          SizedBox(height: 50,),
+                          TextButton.icon(
+                            onPressed: (){},
+                            icon : Icon(Icons.question_answer_outlined,color: Colors.green,),
+                            label: Text(widget.answers.toString(),style: TextStyle(color: CClass.textColor1),),
+                          ),
+                          Divider(color: CClass.containerColor,thickness: 5,)
+                        ],
+                      ),
+                      const Expanded(child: Center(child: Text('No answers yet. Be the first to answer'))),
+                    ],
+                  );
+                }
+            ),
           ),
           Container(
             color: CClass.containerColor,

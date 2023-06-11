@@ -211,6 +211,40 @@ handleDeleteStar() async{
         .update({'totalStars': FieldValue.increment(-1)});
   }
 }
+void showDeleteDialog(){
+  showDialog(
+      context: context,
+      builder: (context){
+        return AlertDialog(
+            backgroundColor: CClass.bGColorTheme(),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: const Text('Delete comment?',textAlign: TextAlign.center,),
+            ),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  InkWell(
+                      onTap: (){
+                        setState(() {
+                          deleteComment();
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Text('Yes',style: TextStyle(color: CClass.textColorTheme()),)),
+                  SizedBox(),
+                  InkWell(
+                      onTap: ()=> Navigator.pop(context),
+                      child: Text('No',style: TextStyle(color: CClass.textColorTheme()),))
+                ],
+              ),
+            )
+        );
+      }
+  );
+}
 
 
   @override
@@ -233,9 +267,7 @@ handleDeleteStar() async{
           subtitle: Text(timeago.format(widget.createdAt.toDate())),
           trailing: widget.uid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
             onPressed: (){
-              setState(() {
-                deleteComment();
-              });
+              showDeleteDialog();
             },
             icon: Icon(Icons.delete,color: CClass.buttonColor2,),
           ):
