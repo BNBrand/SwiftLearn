@@ -43,9 +43,19 @@ class _CommentsState extends State<Comments> {
       }
     });
   }
-
+  Future _getComments() async{
+    await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
+        .collection('commentData').get().then((snapshots){
+      if(snapshots.docs.isNotEmpty){
+        FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
+            {'comments': snapshots.docs.length });
+      }else{
+        FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
+            {'comments': 0 });
+      }
+    });
+  }
   TextEditingController commentController = TextEditingController();
-
   handleComment() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
         .collection('commentData').doc(commentId).set(
@@ -59,12 +69,9 @@ class _CommentsState extends State<Comments> {
           'commentStars': 0,
           'commentId': commentId
         });
-    await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
-        {
-          'comments': FieldValue.increment(1)
-        });
     commentId = const Uuid().v4();
     commentController.clear();
+    _getComments();
   }
   handleEditComment() async{
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
@@ -181,7 +188,19 @@ class Comment extends StatefulWidget {
 
 class _CommentState extends State<Comment> {
 
-deleteComment() async{
+  Future _getComments() async{
+    await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
+        .collection('commentData').get().then((snapshots){
+      if(snapshots.docs.isNotEmpty){
+        FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
+            {'comments': snapshots.docs.length });
+      }else{
+        FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
+            {'comments': 0 });
+      }
+    });
+  }
+  deleteComment() async{
   await FirebaseFirestore.instance.collection('comments').doc(widget.postId)
       .collection('commentData').doc(widget.commentId).delete();
   await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update(
@@ -190,28 +209,29 @@ deleteComment() async{
       });
   await FirebaseFirestore.instance.collection('users').doc(widget.uid)
       .update({'totalStars': FieldValue.increment(-widget.commentStars)});
+  _getComments();
 }
-handleStar() async{
-  await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('commentStars').doc(widget.commentId).set({});
-  await FirebaseFirestore.instance.collection('comments').doc(widget.postId).collection('commentData').doc(widget.commentId)
-      .update({'commentStars': FieldValue.increment(1)});
-  await FirebaseFirestore.instance.collection('users').doc(widget.uid)
-      .update({'totalStars': FieldValue.increment(1)});
-}
-handleDeleteStar() async{
-  DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('commentStars').doc(widget.commentId).get();
-  if(snapshot.exists){
+  handleStar() async{
     await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('commentStars').doc(widget.commentId).delete();
+        .collection('commentStars').doc(widget.commentId).set({});
     await FirebaseFirestore.instance.collection('comments').doc(widget.postId).collection('commentData').doc(widget.commentId)
-        .update({'commentStars': FieldValue.increment(-1)});
+        .update({'commentStars': FieldValue.increment(1)});
     await FirebaseFirestore.instance.collection('users').doc(widget.uid)
-        .update({'totalStars': FieldValue.increment(-1)});
+        .update({'totalStars': FieldValue.increment(1)});
   }
-}
-void showDeleteDialog(){
+  handleDeleteStar() async{
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('commentStars').doc(widget.commentId).get();
+    if(snapshot.exists){
+      await FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('commentStars').doc(widget.commentId).delete();
+      await FirebaseFirestore.instance.collection('comments').doc(widget.postId).collection('commentData').doc(widget.commentId)
+          .update({'commentStars': FieldValue.increment(-1)});
+      await FirebaseFirestore.instance.collection('users').doc(widget.uid)
+          .update({'totalStars': FieldValue.increment(-1)});
+    }
+  }
+  void showDeleteDialog(){
   showDialog(
       context: context,
       builder: (context){

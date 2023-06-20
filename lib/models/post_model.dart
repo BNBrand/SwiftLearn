@@ -14,7 +14,6 @@ class Post extends StatefulWidget {
   final String postId;
   final String ownerId;
   final String caption;
-  final String email;
   final String photoURL;
   final String displayName;
   final String postImage;
@@ -25,7 +24,6 @@ class Post extends StatefulWidget {
   Post({
     required this.postImage,
     required this.ownerId,
-    required this.email,
     required this.photoURL,
     required this.postId,
     required this.caption,
@@ -42,7 +40,6 @@ class Post extends StatefulWidget {
       postId: doc['postId'],
       displayName: doc['displayName'],
       photoURL: doc['photoURL'],
-      email: doc['email'],
       caption: doc['caption'],
       stars: doc['stars'],
       comments: doc['comments'],
@@ -58,7 +55,6 @@ class Post extends StatefulWidget {
     photoURL: photoURL,
     displayName: displayName,
     caption: caption,
-    email: email,
     stars: stars,
     data: {},
     comments: comments,
@@ -72,7 +68,6 @@ class _PostState extends State<Post> {
   final Timestamp createdAt;
   final String ownerId;
   final String caption;
-  final String email;
   final String photoURL;
   final String displayName;
   final String postImage;
@@ -88,7 +83,6 @@ class _PostState extends State<Post> {
     required this.createdAt,
     required this.postImage,
     required this.ownerId,
-    required this.email,
     required this.photoURL,
     required this.postId,
     required this.caption,

@@ -123,6 +123,62 @@ class _ReplyScreenState extends State<ReplyScreen> {
       ),
       body: Column(
         children: [
+          Column(
+            children: [
+              ListTile(
+                leading: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return ProfileScreen(profileId: widget.commenterUid,);
+                    }));
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: CClass.containerColor,
+                    backgroundImage: CachedNetworkImageProvider(widget.commenterPhotoURL),
+                  ),
+                ),
+                title: Text(widget.comments),
+                subtitle: Text(timeago.format(widget.createdAt.toDate())),
+                trailing: widget.commenterUid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
+                  onPressed: (){},
+                  icon: Icon(Icons.more_vert),
+                ):
+                null,
+              ),
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('commentStars').doc(widget.commentId).snapshots(),
+                  builder: (context, snapshot) {
+                    if(!snapshot.hasData){
+                      return TextButton.icon(
+                        onPressed: (){},
+                        icon : Icon(Icons.star,color: CClass.textColor2,),
+                        label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                      );
+                    }
+                    return snapshot.data!.exists ? TextButton.icon(
+                      onPressed: (){
+                        setState(() {
+                          _handleDeleteStar();
+                        });
+                      },
+                      icon : Icon(Icons.star,color: CClass.starColor,),
+                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                    ):
+                    TextButton.icon(
+                      onPressed: (){
+                        setState(() {
+                          _handleStar();
+                        });
+                      },
+                      icon : Icon(Icons.star,color: CClass.textColor2,),
+                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
+                    );
+                  }
+              ),
+              Divider(color: CClass.containerColor,thickness: 5,)
+            ],
+          ),
           Expanded(
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('comments').doc(widget.postId)
@@ -131,62 +187,6 @@ class _ReplyScreenState extends State<ReplyScreen> {
                     if(!snapshot.hasData){
                       return  Column(
                         children: [
-                          Column(
-                            children: [
-                              ListTile(
-                                leading: GestureDetector(
-                                  onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                                      return ProfileScreen(profileId: widget.commenterUid,);
-                                    }));
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundColor: CClass.containerColor,
-                                    backgroundImage: CachedNetworkImageProvider(widget.commenterPhotoURL),
-                                  ),
-                                ),
-                                title: Text(widget.comments),
-                                subtitle: Text(timeago.format(widget.createdAt.toDate())),
-                                trailing: widget.commenterUid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
-                                  onPressed: (){},
-                                  icon: Icon(Icons.more_vert),
-                                ):
-                                null,
-                              ),
-                              StreamBuilder(
-                                  stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                      .collection('commentStars').doc(widget.commentId).snapshots(),
-                                  builder: (context, snapshot) {
-                                    if(!snapshot.hasData){
-                                      return TextButton.icon(
-                                        onPressed: (){},
-                                        icon : Icon(Icons.star,color: CClass.textColor2,),
-                                        label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                      );
-                                    }
-                                    return snapshot.data!.exists ? TextButton.icon(
-                                      onPressed: (){
-                                        setState(() {
-                                          _handleDeleteStar();
-                                        });
-                                      },
-                                      icon : Icon(Icons.star,color: CClass.starColor,),
-                                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                    ):
-                                    TextButton.icon(
-                                      onPressed: (){
-                                        setState(() {
-                                          _handleStar();
-                                        });
-                                      },
-                                      icon : Icon(Icons.star,color: CClass.textColor2,),
-                                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                    );
-                                  }
-                              ),
-                              Divider(color: CClass.containerColor,thickness: 5,)
-                            ],
-                          ),
                           Expanded(child: Center(child: CircularProgressIndicator(color: CClass.bTColor2Theme(),))),
                         ],
                       );
@@ -269,62 +269,6 @@ class _ReplyScreenState extends State<ReplyScreen> {
                      }
                       return Column(
                         children: [
-                          Column(
-                            children: [
-                              ListTile(
-                                leading: GestureDetector(
-                                  onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                                      return ProfileScreen(profileId: widget.commenterUid,);
-                                    }));
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundColor: CClass.containerColor,
-                                    backgroundImage: CachedNetworkImageProvider(widget.commenterPhotoURL),
-                                  ),
-                                ),
-                                title: Text(widget.comments),
-                                subtitle: Text(timeago.format(widget.createdAt.toDate())),
-                                trailing: widget.commenterUid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
-                                  onPressed: (){},
-                                  icon: Icon(Icons.more_vert),
-                                ):
-                                null,
-                              ),
-                              StreamBuilder(
-                                  stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                      .collection('commentStars').doc(widget.commentId).snapshots(),
-                                  builder: (context, snapshot) {
-                                    if(!snapshot.hasData){
-                                      return TextButton.icon(
-                                        onPressed: (){},
-                                        icon : Icon(Icons.star,color: CClass.textColor2,),
-                                        label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                      );
-                                    }
-                                    return snapshot.data!.exists ? TextButton.icon(
-                                      onPressed: (){
-                                        setState(() {
-                                          _handleDeleteStar();
-                                        });
-                                      },
-                                      icon : Icon(Icons.star,color: CClass.starColor,),
-                                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                    ):
-                                    TextButton.icon(
-                                      onPressed: (){
-                                        setState(() {
-                                          _handleStar();
-                                        });
-                                      },
-                                      icon : Icon(Icons.star,color: CClass.textColor2,),
-                                      label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                    );
-                                  }
-                              ),
-                              Divider(color: CClass.containerColor,thickness: 5,)
-                            ],
-                          ),
                           ListTile(
                             leading: GestureDetector(
                               onTap: (){
@@ -383,62 +327,6 @@ class _ReplyScreenState extends State<ReplyScreen> {
                   ):
                   Column(
                     children: [
-                      Column(
-                        children: [
-                          ListTile(
-                            leading: GestureDetector(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context){
-                                  return ProfileScreen(profileId: widget.commenterUid,);
-                                }));
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: CClass.containerColor,
-                                backgroundImage: CachedNetworkImageProvider(widget.commenterPhotoURL),
-                              ),
-                            ),
-                            title: Text(widget.comments),
-                            subtitle: Text(timeago.format(widget.createdAt.toDate())),
-                            trailing: widget.commenterUid == FirebaseAuth.instance.currentUser!.uid ? IconButton(
-                              onPressed: (){},
-                              icon: Icon(Icons.more_vert),
-                            ):
-                            null,
-                          ),
-                          StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('stars').doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .collection('commentStars').doc(widget.commentId).snapshots(),
-                              builder: (context, snapshot) {
-                                if(!snapshot.hasData){
-                                  return TextButton.icon(
-                                    onPressed: (){},
-                                    icon : Icon(Icons.star,color: CClass.textColor2,),
-                                    label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                  );
-                                }
-                                return snapshot.data!.exists ? TextButton.icon(
-                                  onPressed: (){
-                                    setState(() {
-                                      _handleDeleteStar();
-                                    });
-                                  },
-                                  icon : Icon(Icons.star,color: CClass.starColor,),
-                                  label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                ):
-                                TextButton.icon(
-                                  onPressed: (){
-                                    setState(() {
-                                      _handleStar();
-                                    });
-                                  },
-                                  icon : Icon(Icons.star,color: CClass.textColor2,),
-                                  label: Text(widget.commentStars.toString(),style: TextStyle(color: CClass.textColorTheme()),),
-                                );
-                              }
-                          ),
-                          Divider(color: CClass.containerColor,thickness: 5,)
-                        ],
-                      ),
                       Expanded(child: Center(child: Text('No replies yet'))),
                     ],
                   );

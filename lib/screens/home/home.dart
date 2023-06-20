@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:swift_learn/screens/Forum/Quiz/result_screen.dart';
 import 'package:swift_learn/utils/color.dart';
 
 import '../../models/user_model.dart';
-import '../../utils/utils.dart';
 import '../../widgets/loading.dart';
 import '../authenticate/landing_screen.dart';
 
@@ -28,66 +28,73 @@ class _HomeState extends State<Home> {
           }
           Users user = Users.fromDocument(snapshot.data!);
         return Scaffold(
-          backgroundColor: CClass.bGColorTheme(),
+          backgroundColor: CClass.backgroundColor,
           appBar: AppBar(
-            backgroundColor: CClass.bGColorTheme(),
+            centerTitle: true,
+            title: Text('Welcome to SwiftLearn', style: TextStyle(fontSize: 25),),
+            backgroundColor: CClass.backgroundColor,
             elevation: 0.0,
           ),
-          drawer: Drawer(
-            backgroundColor: CClass.bGColorTheme(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(
-                    color: CClass.secondaryBGColorTheme()
-                  ),
-                  currentAccountPicture: GestureDetector(
-                    onTap: (){
-                      Navigator.pushNamed(context, '/profileScreen');
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
-                    ),
-                  ),
-                  accountName: Text(user.displayName,style: TextStyle(color: CClass.textColorTheme()),),
-                  accountEmail: Text(user.email,style: TextStyle(color: CClass.textColorTheme())),
-                ),
-                GestureDetector(
-                  onTap: (){
-                    showAboutDialog(
-                        context: context,
-                      applicationName: 'SwiftLearn',
-                      applicationVersion: '1.0.0',
-                      applicationLegalese: 'BNBrand Copyright @ 2023'
-                    );
-                  },
-                    child: Text('About')
-                )
-              ],
-            ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: CClass.buttonColor,
+            child: Icon(Icons.notifications,color: CClass.textColor1,),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                return const ResultScreen();
+              }));
+            },
           ),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(user.displayName,style: TextStyle(color: CClass.textColor1)),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context){
-                        return LandingScreen();
-                      }));
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(user.photoURL),
-                      radius: 50
-                    ),
+                  Column(
+                    children: [
+                      Text(user.displayName,style: TextStyle(color: CClass.textColor1)),
+                      const SizedBox(height: 10,),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context){
+                            return const LandingScreen();
+                          }));
+                        },
+                        child: CircleAvatar(
+                            backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                            radius: 50
+                        ),
+                      ),
+                      const SizedBox(height: 10,),
+                      Text(user.email,style: TextStyle(color: CClass.textColor1)),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  Text(user.email,style: TextStyle(color: CClass.textColor1)),
+                  Text('Learning Never Ends...', style: TextStyle(fontSize: 20),),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ListTile(
+                        leading:  Icon(Icons.videocam,color: CClass.buttonColor2,),
+                          title: Text('Start Video Meetings', style: TextStyle(color: CClass.buttonColor2),)),
+                      const ListTile(
+                          leading: Icon(Icons.question_answer_outlined, color: Colors.greenAccent),
+                          title: Text('Engage in the Q&A platform', style: TextStyle(color: Colors.greenAccent),),
+                      ),
+                      const ListTile(
+                          leading: Icon(Icons.upload, color: Colors.redAccent),
+                          title: Text('Upload and Post Images', style: TextStyle(color: Colors.redAccent),)),
+                      const ListTile(
+                          leading: Icon(Icons.quiz,color: Colors.blue),
+                          title: Text('Create and Answer Quizzes', style: TextStyle(color: Colors.blue),)),
+                      const ListTile(
+                          leading: Icon(Icons.videocam, color: Colors.yellowAccent),
+                          title: Text('Store and Manage Notes', style: TextStyle(color: Colors.yellowAccent),)),const ListTile(
+                          leading: Icon(Icons.dehaze),
+                          title: Text('And more...')),
+
+                    ],
+                  )
                 ],
               ),
             ),

@@ -68,13 +68,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
     _croppedImage(pickedFile!.path);
   }
-
   void _getImageFromGallery() async{
     Navigator.pop(context);
     XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     _croppedImage(pickedFile!.path);
   }
-
   void _croppedImage(filePath) async{
     CroppedFile? croppedImage = await ImageCropper().cropImage(sourcePath: filePath,
         maxHeight: 1080, maxWidth: 1080
@@ -86,7 +84,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
-
   void _showImageDialog(){
     showDialog(
         context: context,
@@ -132,7 +129,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
     );
   }
-
   void _updatePhotoURL() async{
     String imageName = DateTime.now().microsecondsSinceEpoch.toString();
     fstorage.Reference reference = fstorage.FirebaseStorage.instance.ref().child('userImages').child(imageName);
@@ -146,7 +142,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       'photoURL' : imageUrl
     });
   }
-
   updateProfile(){
     setState(() {
       valideField();
@@ -172,7 +167,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     });
   }
-
   studentDetail(){
     isStudent = true;
     return Column(

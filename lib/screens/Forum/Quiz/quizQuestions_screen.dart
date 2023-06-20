@@ -28,6 +28,7 @@ class _QuizQuestionsState extends State<QuizQuestions> {
  String questionId = const Uuid().v4();
  String occupation = 'Student';
   var items = ['A', 'B', 'C', 'D'];
+  int selectedIndex = 5;
   Future _getData() async{
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
         .get().then((snapshot) async{
@@ -45,7 +46,7 @@ class _QuizQuestionsState extends State<QuizQuestions> {
             'question': questionController.text.trim(),
             'questionId': questionId,
             'ownerId': FirebaseAuth.instance.currentUser!.uid,
-            'answer': 5,
+            'answer': selectedIndex,
             'option1': option1Controller.text.trim(),
             'option2': option2Controller.text.trim(),
             'option3': option3Controller.text.trim(),
@@ -62,136 +63,175 @@ class _QuizQuestionsState extends State<QuizQuestions> {
         backgroundColor: CClass.backgroundColor,
         context: context,
         builder: (BuildContext context){
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: TextField(
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
-                        autofocus: true,
+          return StatefulBuilder(builder: (BuildContext context, StateSetter setState){
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: TextField(
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          autofocus: true,
+                          autocorrect: true,
+                          controller: questionController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: 'Enter Question',
+                            labelStyle: TextStyle(color: CClass.backgroundColor2),
+                            filled: true,
+                            fillColor: CClass.textColor1,
+                          ),
+                          maxLines: 4,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              height: 1.5),
+                        ),
+                      ),
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text('Correct Option :'),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedIndex = 0;
+                              });
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: selectedIndex == 0 ? CClass.buttonColor2
+                                  : CClass.backgroundColor2,
+                              child: Text(items[0]),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedIndex = 1;
+                              });                          },
+                            child: CircleAvatar(
+                              backgroundColor: selectedIndex == 1 ? CClass.buttonColor2
+                                  : CClass.backgroundColor2,
+                              child: Text(items[1]),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedIndex = 2;
+                              });                          },
+                            child: CircleAvatar(
+                              backgroundColor: selectedIndex == 2 ? CClass.buttonColor2
+                                  : CClass.backgroundColor2,
+                              child: Text(items[2]),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedIndex = 3;
+                              });                          },
+                            child: CircleAvatar(
+                              backgroundColor: selectedIndex == 3 ? CClass.buttonColor2
+                                  : CClass.backgroundColor2,
+                              child: Text(items[3]),
+                            ),
+                          )
+                        ],
+                      ),
+                      const Divider(),
+                      TextField(
                         autocorrect: true,
-                        controller: questionController,
+                        controller: option1Controller,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          labelText: 'Enter Question',
+                          labelText: 'Enter option A:',
                           labelStyle: TextStyle(color: CClass.backgroundColor2),
                           filled: true,
                           fillColor: CClass.textColor1,
                         ),
-                        maxLines: 5,
                         textCapitalization: TextCapitalization.sentences,
                         style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
                             height: 1.5),
                       ),
-                    ),
-                    // DropdownButton(
-                    //     value: '',
-                    //     dropdownColor: CClass.containerColor,
-                    //     items: items.map((String items){
-                    //       return DropdownMenuItem(
-                    //         value: items,
-                    //         child: Text(items),
-                    //       );
-                    //     }).toList(),
-                    //     onChanged: (value){
-                    //       // setState(() {
-                    //       //   items[index] = value!;
-                    //       // });
-                    //     }
-                    // ),
-                    const Divider(),
-                    TextField(
-                      autocorrect: true,
-                      controller: option1Controller,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        labelText: 'Enter option A:',
-                        labelStyle: TextStyle(color: CClass.backgroundColor2),
-                        filled: true,
-                        fillColor: CClass.textColor1,
+                      const Divider(),
+                      TextField(
+                        autocorrect: true,
+                        controller: option2Controller,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'Enter option B:',
+                          labelStyle: TextStyle(color: CClass.backgroundColor2),
+                          filled: true,
+                          fillColor: CClass.textColor1,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            height: 1.5),
                       ),
-                      textCapitalization: TextCapitalization.sentences,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          height: 1.5),
-                    ),
-                    const Divider(),
-                    TextField(
-                      autocorrect: true,
-                      controller: option2Controller,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        labelText: 'Enter option B:',
-                        labelStyle: TextStyle(color: CClass.backgroundColor2),
-                        filled: true,
-                        fillColor: CClass.textColor1,
+                      const Divider(),
+                      TextField(
+                        autocorrect: true,
+                        controller: option3Controller,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'Enter option C:',
+                          labelStyle: TextStyle(color: CClass.backgroundColor2),
+                          filled: true,
+                          fillColor: CClass.textColor1,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            height: 1.5),
                       ),
-                      textCapitalization: TextCapitalization.sentences,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          height: 1.5),
-                    ),
-                    const Divider(),
-                    TextField(
-                      autocorrect: true,
-                      controller: option3Controller,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        labelText: 'Enter option C:',
-                        labelStyle: TextStyle(color: CClass.backgroundColor2),
-                        filled: true,
-                        fillColor: CClass.textColor1,
+                      const Divider(),
+                      TextField(
+                        autocorrect: true,
+                        controller: option4Controller,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'Enter option D:',
+                          labelStyle: TextStyle(color: CClass.backgroundColor2),
+                          filled: true,
+                          fillColor: CClass.textColor1,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            height: 1.5),
                       ),
-                      textCapitalization: TextCapitalization.sentences,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          height: 1.5),
-                    ),
-                    const Divider(),
-                    TextField(
-                      autocorrect: true,
-                      controller: option4Controller,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        labelText: 'Enter option D:',
-                        labelStyle: TextStyle(color: CClass.backgroundColor2),
-                        filled: true,
-                        fillColor: CClass.textColor1,
-                      ),
-                      textCapitalization: TextCapitalization.sentences,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          height: 1.5),
-                    ),
-                    CustomButton(
-                        text: 'Done',
-                        onPressed: (){
-                          setState(() {
-                            _handleQuizTitle();
-                            Navigator.pop(context);
-                          });
-                        },
-                        color: Colors.green,
-                        icon: Icons.check,
-                        textColor: CClass.textColor1
-                    )
-                  ],
-                ),
-              ],
-            ),
-          );
+                      CustomButton(
+                          text: 'Done',
+                          onPressed: (){
+                            setState(() {
+                              _handleQuizTitle();
+                              Navigator.pop(context);
+                            });
+                          },
+                          color: Colors.green,
+                          icon: Icons.check,
+                          textColor: CClass.textColor1
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          });
         }
     );
   }
@@ -300,7 +340,8 @@ class _QuizQuestionsState extends State<QuizQuestions> {
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context){
                           return AnswerQuiz(
                               quizId: widget.quizId,
-                              questionId: questionID);
+                              questionId: questionID,
+                          );
                         })),
                         child:GestureDetector(
                           onLongPress: showDialogBoxUpdate,

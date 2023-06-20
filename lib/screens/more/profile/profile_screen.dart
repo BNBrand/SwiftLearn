@@ -321,7 +321,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             Container(height: 70,),
                                             Row(
                                               children: [
-                                                Icon(Icons.clear,color: CClass.buttonColor2,),
+                                                Icon(Icons.remove,color: CClass.buttonColor2,),
                                                 Text('Unfollow',style: TextStyle(color: CClass.buttonColor2),)
                                               ],
                                             ),

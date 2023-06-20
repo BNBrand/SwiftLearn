@@ -122,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         return snapshot.data!.exists ?
                         TextButton.icon(
                           label: Text('UnFollow',style: TextStyle(color: CClass.buttonColor),),
-                          icon: Icon(Icons.close,color: CClass.buttonColor,),
+                          icon: Icon(Icons.remove,color: CClass.buttonColor,),
                           onPressed: handleUnfollow,
                         ):
                         TextButton.icon(

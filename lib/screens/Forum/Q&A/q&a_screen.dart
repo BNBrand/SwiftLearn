@@ -183,7 +183,12 @@ class _QAScreenState extends State<QAScreen> {
                                         subtitle: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('By ${user.displayName}   - ${timeago.format(createdAt.toDate())} -'),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width * 0.5,
+                                              child: Text('By ${user.displayName}   - ${timeago.format(createdAt.toDate())} -',
+                                              overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
                                             TextButton.icon(
                                                 onPressed: (){},
                                                 icon: Icon(Icons.question_answer_outlined,color: Colors.green),
